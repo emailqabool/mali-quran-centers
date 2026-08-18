@@ -316,6 +316,37 @@ const I18N = {
   }
 };
 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx83PCEqT39I-X5GHyuAII2QkpEz_zLOYX_HCp2G6U8UvhGGMhpu6xzqMoO7yU-11R5dw/exec";
+
+async function saveCenterToGoogleSheets(centerData) {
+  try {
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(centerData)
+    });
+  } catch (err) {
+    console.log('Error syncing with Google Sheets', err);
+  }
+}
+
+async function syncFromGoogleSheets() {
+  try {
+    const res = await fetch(GOOGLE_SCRIPT_URL);
+    const data = await res.json();
+    if (data && data.status === 'success' && Array.isArray(data.centers) && data.centers.length > 0) {
+      centersList = data.centers;
+      saveDataToStorage();
+      renderTable();
+      updateStats();
+      updateAdminKPIStats();
+    }
+  } catch (err) {
+    console.log('Using local storage fallback', err);
+  }
+}
+
 // Application Bootstrapping
 document.addEventListener('DOMContentLoaded', () => {
   loadStoredData();
@@ -324,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   toggleGenderFields();
   setupPhoneFormattingAndProgress();
+  syncFromGoogleSheets();
 });
 
 function loadStoredData() {
@@ -800,6 +832,7 @@ function handleFormSubmit(e) {
     };
     centersList.unshift(newCenter);
     saveDataToStorage();
+    saveCenterToGoogleSheets(newCenter);
     renderTable();
     updateStats();
     showReceiptModal(newCenter);
