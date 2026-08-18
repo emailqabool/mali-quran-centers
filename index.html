@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>استبيان حصر مراكز القرآن الكريم في مالي - اتحاد المدارس والمراكز</title>
+  <!-- Open Graph & WhatsApp Social Share Meta Tags -->
+  <meta property="og:title" content="المنصة الرسمية لحصر المراكز القرآنية في مالي - AECMEC MALI">
+  <meta property="og:description" content="إتحاد مدارس ومراكز تحفيظ القرآن الكريم في جمهورية مالي - اضغط هنا لتسجيل بيانات مركزك القرآني في أقل من دقيقتين.">
+  <meta property="og:image" content="logo.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Styled Excel Export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+
+    <!-- Top Header & Branding Bar -->
+    <header class="top-header">
+      <div class="header-content">
+        
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Logo & Title -->
+        <div class="union-branding">
+          <div class="logo-container">
+            <img src="logo.jpg" alt="شعار الاتحاد" class="app-logo-img">
+          </div>
+          <div class="brand-titles">
+            <h1 class="main-title" id="main-app-title">جمع بيانات مدارس ومراكز تحفيظ القرآن الكريم في مالي</h1>
+            <h2 class="sub-title" id="sub-app-title">اتحاد المدارس والمراكز القرآنية في جمهورية مالي</h2>
+          </div>
+        </div>
+
+        <!-- Controls (Language Switcher & Admin Auth) -->
+        <div class="header-controls">
+          <button class="lang-toggle-btn" id="btn-lang-toggle" onclick="toggleLanguage()" title="تغيير اللغة / Changer la langue">
+            <span id="txt-target-lang">🇫🇷 Français</span>
+          </button>
+          
+          <div class="admin-auth-badge" id="auth-status-container">
+            <button class="auth-btn" id="btn-login-trigger" onclick="openLoginModal()">
+              <i class="fa-solid fa-lock"></i> <span id="txt-login-btn">دخول المسؤول</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content Layout (Sidebar + Main Views) -->
+    <div class="main-layout">
+
+      <!-- Navigation Sidebar (Mobile Responsive Drawer) -->
+      <aside class="sidebar" id="app-sidebar">
+        <div class="sidebar-header-mobile">
+          <span id="lbl-mobile-menu-title">قائمة النظام</span>
+          <button class="close-mobile-menu" onclick="toggleMobileMenu()">&times;</button>
+        </div>
+
+        <ul class="nav-menu">
+          <li class="nav-item active" onclick="switchTab('tab-survey')" id="nav-survey">
+            <i class="fa-solid fa-file-pen"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-survey">استبيان التسجيل</span>
+            </div>
+          </li>
+          <li class="nav-item" onclick="switchTab('tab-schools-list')" id="nav-schools-list">
+            <i class="fa-solid fa-list-check"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-schools">قائمة المدارس</span>
+            </div>
+          </li>
+          <li class="nav-item" onclick="scrollToFilters()" id="nav-search-filter">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-search">البحث والتصفية</span>
+            </div>
+          </li>
+          <li class="nav-item" onclick="openCommuneModal()" id="nav-manage-communes">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-communes">إدارة البلديات</span>
+            </div>
+          </li>
+          <li class="nav-item" onclick="exportFormattedExcel()" id="nav-export-excel">
+            <i class="fa-solid fa-file-excel"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-excel">تصدير Excel</span>
+            </div>
+          </li>
+          <li class="nav-item" onclick="triggerPrintReport()" id="nav-print-reports">
+            <i class="fa-solid fa-print"></i>
+            <div class="nav-labels">
+              <span id="lbl-nav-print">طباعة التقارير</span>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Quick Stats Widget -->
+        <div class="sidebar-stats-widget">
+          <div class="stat-item">
+            <span class="stat-num" id="side-stat-centers">0</span>
+            <span class="stat-lbl" id="lbl-stat-centers">مركز مسجل</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="side-stat-students">0</span>
+            <span class="stat-lbl" id="lbl-stat-students">إجمالي الطلاب</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Body Content Area -->
+      <main class="content-area">
+
+        <!-- Public Banner Info -->
+        <div class="public-notice-banner" id="public-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>مرحباً بكم! الاستبيان مفتوح للجميع لإدخال بيانات المركز القرآني مباشرة. صلاحيات الإدارة والطباعة وتدقيق البيانات مخصصة لمسؤول النظام.</span>
+        </div>
+
+        <!-- SECTION 1: PUBLIC SURVEY & DATA COLLECTION FORM -->
+        <section class="card-box form-card" id="survey-section">
+          
+          <!-- Public User Welcome & Guidance Banner -->
+          <div class="welcome-banner" id="public-welcome-banner">
+            <div class="welcome-icon">
+              <i class="fa-solid fa-hand-holding-heart"></i>
+            </div>
+            <div class="welcome-text">
+              <h4 id="lbl-welcome-title">مرحباً بكم في المنصة الرسمية لحصر المراكز القرآنية في مالي</h4>
+              <p id="lbl-welcome-desc">تعبئة البيانات متاحة لكافة مدراء ومشرفي المراكز والمدارس القرآنية في مالي، ولا تتطلب أي تسجيل دخول وتستغرق أقل من دقيقتين.</p>
+            </div>
+          </div>
+
+          <!-- Form Progress Indicator -->
+          <div class="form-progress-container">
+            <div class="progress-info">
+              <span id="lbl-progress-txt">نسبة إكمال بيانات الاستبيان:</span>
+              <strong id="progress-percent">0%</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="survey-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="card-header">
+            <div class="card-header-title">
+              <h3 id="form-card-title">إدخال بيانات جديدة</h3>
+            </div>
+            <div class="card-icon">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+          </div>
+
+          <form id="quran-center-form" onsubmit="handleFormSubmit(event)">
+            <input type="hidden" id="center_edit_id" value="">
+            
+            <!-- Dual Fields: Center Name -->
+            <div class="form-row dual-fields">
+              <div class="field-group">
+                <label for="name_ar" id="lbl-name-ar">اسم المركز (باللغة العربية) <span class="req">*</span></label>
+                <input type="text" id="name_ar" placeholder="أدخل اسم المركز" required>
+              </div>
+              <div class="field-group">
+                <label for="name_fr" id="lbl-name-fr">اسم المركز (باللغة الفرنسية) <span class="req">*</span></label>
+                <input type="text" id="name_fr" placeholder="Saisir le nom du centre" required>
+              </div>
+            </div>
+
+            <!-- Dual Fields: Director Name -->
+            <div class="form-row dual-fields">
+              <div class="field-group">
+                <label for="director_ar" id="lbl-director-ar">اسم المدير / المديرة (بالعربية) <span class="req">*</span></label>
+                <input type="text" id="director_ar" placeholder="أدخل اسم المدير / المديرة" required>
+              </div>
+              <div class="field-group">
+                <label for="director_fr" id="lbl-director-fr">اسم المدير / المديرة (بالفرنسية) <span class="req">*</span></label>
+                <input type="text" id="director_fr" placeholder="Saisir le nom du directeur" required>
+              </div>
+            </div>
+
+            <!-- Dual Fields: Address -->
+            <div class="form-row dual-fields">
+              <div class="field-group">
+                <label for="address_ar" id="lbl-address-ar">عنوان المركز (بالعربية)</label>
+                <input type="text" id="address_ar" placeholder="أدخل عنوان المركز">
+              </div>
+              <div class="field-group">
+                <label for="address_fr" id="lbl-address-fr">عنوان المركز (بالفرنسية)</label>
+                <input type="text" id="address_fr" placeholder="Saisir l'adresse">
+              </div>
+            </div>
+
+            <!-- Commune & Phone -->
+            <div class="form-row dual-fields">
+              <div class="field-group">
+                <label for="commune" id="lbl-commune">البلدية <span class="req">*</span></label>
+                <div class="select-wrapper">
+                  <select id="commune" required>
+                    <option value="">اختر البلدية</option>
+                  </select>
+                  <i class="fa-solid fa-location-dot input-icon"></i>
+                </div>
+              </div>
+              <div class="field-group">
+                <label for="phone" id="lbl-phone">رقم الهاتف <span class="req">*</span></label>
+                <div class="input-icon-wrapper">
+                  <input type="tel" id="phone" placeholder="مثال: 76 12 34 56" required oninput="handlePhoneInput(this)" onblur="handlePhoneInput(this)">
+                  <i class="fa-solid fa-phone input-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Count & Auto Type Detection -->
+            <div class="form-row triple-fields">
+              <input type="hidden" id="student_gender_type" value="mixte">
+              
+              <div class="field-group">
+                <label for="boys_count" id="lbl-boys-count"><i class="fa-solid fa-child" style="color: #0b5d3f;"></i> عدد البنين</label>
+                <input type="number" id="boys_count" min="0" value="0" placeholder="0" onfocus="this.select()" oninput="handleStudentCountInput()">
+              </div>
+              
+              <div class="field-group">
+                <label for="girls_count" id="lbl-girls-count"><i class="fa-solid fa-child-dress" style="color: #0b5d3f;"></i> عدد البنات</label>
+                <input type="number" id="girls_count" min="0" value="0" placeholder="0" onfocus="this.select()" oninput="handleStudentCountInput()">
+              </div>
+              
+              <div class="field-group">
+                <label for="total_students" id="lbl-total-students">إجمالي الطلاب والتصنيف</label>
+                <div class="total-type-wrapper">
+                  <div class="input-icon-wrapper" style="flex: 1;">
+                    <input type="number" id="total_students" readonly class="readonly-bg" value="0" style="font-weight: 800; color: #0b5d3f; font-size: 16px;">
+                    <i class="fa-solid fa-users input-icon"></i>
+                  </div>
+                  <div class="auto-type-badge" id="auto-type-badge" title="التصنيف التلقائي">
+                    <i class="fa-solid fa-people-hold"></i> <span id="auto-type-lbl">بنين وبنات</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Union Membership -->
+            <div class="form-row single-field">
+              <div class="field-group">
+                <label for="union_membership" id="lbl-union-membership">هل المركز منضم إلى الاتحاد؟ <span class="req">*</span></label>
+                <div class="select-wrapper">
+                  <select id="union_membership" required>
+                    <option value="" id="opt-mem-default">اختر الخيار</option>
+                    <option value="Oui" id="opt-mem-yes">نعم - منضم سابقاً</option>
+                    <option value="Non" id="opt-mem-no">لا - غير منضم بعد</option>
+                  </select>
+                  <i class="fa-solid fa-users-gear input-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-submit" id="btn-submit-center">
+                <i class="fa-solid fa-paper-plane" id="btn-submit-icon"></i> <span id="btn-submit-txt">إرسال البيانات</span>
+              </button>
+              <button type="button" class="btn btn-reset" onclick="resetForm()">
+                <i class="fa-solid fa-rotate-left"></i> <span id="btn-reset-txt">إعادة ضبط</span>
+              </button>
+            </div>
+
+          </form>
+        </section>
+
+
+        <!-- SECTION 2: REGISTERED SCHOOLS LIST & FILTER SYSTEM -->
+        <section class="card-box table-card" id="list-section">
+          
+          <!-- Admin Dashboard KPI Cards Bar -->
+          <div class="admin-kpi-bar" id="admin-kpi-cards">
+            <div class="kpi-card">
+              <div class="kpi-icon icon-emerald"><i class="fa-solid fa-school"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-val" id="kpi-total-centers">0</span>
+                <span class="kpi-lbl" id="lbl-kpi-total-centers">إجمالي المراكز المسجلة</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-val" id="kpi-total-students">0</span>
+                <span class="kpi-lbl" id="lbl-kpi-total-students">إجمالي الطلاب والطالبات</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon icon-gold"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-val" id="kpi-top-commune">-</span>
+                <span class="kpi-lbl" id="lbl-kpi-top-commune">البلدية الأكثر تسجيلاً</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon icon-purple"><i class="fa-solid fa-certificate"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-val" id="kpi-union-ratio">0%</span>
+                <span class="kpi-lbl" id="lbl-kpi-union-ratio">نسبة الأعضاء بالاتحاد</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-header border-bottom">
+            <div class="card-header-title">
+              <h3 id="table-card-title">قائمة المدارس المسجلة</h3>
+            </div>
+            <div class="card-icon">
+              <i class="fa-solid fa-list-ul"></i>
+            </div>
+          </div>
+
+          <!-- Quick Filter Pills Bar -->
+          <div class="quick-filter-pills">
+            <button class="pill-btn active" data-type="ALL" onclick="setQuickFilterType('ALL', this)"><i class="fa-solid fa-layer-group"></i> <span id="lbl-pill-all">جميع المراكز</span></button>
+            <button class="pill-btn" data-type="garcons" onclick="setQuickFilterType('garcons', this)"><i class="fa-solid fa-child"></i> <span id="lbl-pill-boys">بنين فقط</span></button>
+            <button class="pill-btn" data-type="filles" onclick="setQuickFilterType('filles', this)"><i class="fa-solid fa-child-dress"></i> <span id="lbl-pill-girls">بنات فقط</span></button>
+            <button class="pill-btn" data-type="mixte" onclick="setQuickFilterType('mixte', this)"><i class="fa-solid fa-people-hold"></i> <span id="lbl-pill-mixte">مشتركة</span></button>
+            <button class="pill-btn" data-type="union" onclick="setQuickFilterType('union', this)"><i class="fa-solid fa-circle-check"></i> <span id="lbl-pill-union">أعضاء الاتحاد</span></button>
+          </div>
+
+          <!-- Controls Bar (Filter, Search, Export Excel, Print) -->
+          <div class="table-controls-bar">
+            <div class="control-group search-box">
+              <div class="input-icon-wrapper">
+                <input type="text" id="search-input" placeholder="بحث..." oninput="filterTable()">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              </div>
+            </div>
+
+            <div class="control-group filter-select">
+              <label for="filter-commune" id="lbl-filter-commune">البلدية:</label>
+              <select id="filter-commune" onchange="filterTable()">
+                <option value="ALL" id="opt-filt-commune-all">الكل</option>
+              </select>
+            </div>
+
+            <div class="control-group filter-select">
+              <label for="filter-membership" id="lbl-filter-membership">العضوية:</label>
+              <select id="filter-membership" onchange="filterTable()">
+                <option value="ALL" id="opt-filt-mem-all">الكل</option>
+                <option value="Oui" id="opt-filt-mem-yes">نعم</option>
+                <option value="Non" id="opt-filt-mem-no">لا</option>
+              </select>
+            </div>
+
+            <div class="control-group action-btns">
+              <button class="btn btn-excel" onclick="exportFormattedExcel()" title="تصدير ملف إكسل منسق بتصميم رسمي">
+                <i class="fa-solid fa-file-excel"></i> <span class="hide-mobile" id="btn-export-excel-txt">تصدير Excel</span>
+              </button>
+              <button class="btn btn-print" onclick="triggerPrintReport()">
+                <i class="fa-solid fa-print"></i> <span class="hide-mobile" id="btn-print-txt">طباعة</span>
+              </button>
+              <button class="btn btn-backup admin-only-inline" onclick="downloadBackupJSON()" title="تنزيل نسخة احتياطية من البيانات">
+                <i class="fa-solid fa-download"></i> <span class="hide-mobile">نسخ احتياطي</span>
+              </button>
+              <button class="btn btn-restore admin-only-inline" onclick="triggerRestoreJSON()" title="استعادة نسخة احتياطية">
+                <i class="fa-solid fa-upload"></i> <span class="hide-mobile">استعادة</span>
+              </button>
+              <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackupJSON(event)" style="display:none;">
+            </div>
+          </div>
+
+          <!-- Data Table View -->
+          <div class="table-responsive">
+            <table class="data-table" id="schools-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th id="th-center-name">اسم المركز القرآني</th>
+                  <th id="th-director-name">المدير / المشرف</th>
+                  <th id="th-commune">البلدية</th>
+                  <th id="th-phone">الهاتف</th>
+                  <th id="th-students-count">عدد الطلاب</th>
+                  <th id="th-union-membership">عضوية الاتحاد</th>
+                  <th class="text-center" id="th-actions">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="schools-table-body">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer Summary -->
+          <div class="table-footer-summary">
+            <span><span id="lbl-visible-count-prefix">إجمالي المراكز المعروضة:</span> <strong id="visible-count">0</strong></span>
+            <span><span id="lbl-visible-students-prefix">مجموع الطلاب:</span> <strong id="visible-students">0</strong> (<span id="lbl-boys-prefix">بنين:</span> <span id="visible-boys">0</span> | <span id="lbl-girls-prefix">بنات:</span> <span id="visible-girls">0</span>)</span>
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Fixed Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+      <button class="nav-btn active" onclick="switchTab('tab-survey')">
+        <i class="fa-solid fa-file-pen"></i>
+        <span>الاستبيان</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('tab-schools-list')">
+        <i class="fa-solid fa-list-check"></i>
+        <span>المدارس</span>
+      </button>
+      <button class="nav-btn" onclick="exportFormattedExcel()">
+        <i class="fa-solid fa-file-excel"></i>
+        <span>Excel</span>
+      </button>
+      <button class="nav-btn" onclick="triggerPrintReport()">
+        <i class="fa-solid fa-print"></i>
+        <span>طباعة</span>
+      </button>
+    </nav>
+
+    <!-- Footer Copyright & Support Bar -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <div class="footer-copy">
+          <p>© 2026 إتحاد مدارس ومراكز تحفيظ القرآن الكريم في جمهورية مالي | AECMEC - MALI</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://wa.me/22376000000" target="_blank" class="footer-whatsapp-btn" title="تواصل للمساعدة عبر الواتساب">
+            <i class="fa-brands fa-whatsapp"></i> <span id="lbl-whatsapp-support">الدعم الفني عبر الواتساب</span>
+          </a>
+          <button type="button" class="footer-auth-link" onclick="openLoginModal()" id="footer-auth-trigger">
+            <i class="fa-solid fa-lock"></i> <span id="lbl-footer-auth-btn">دخول المسؤول</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Admin Login Modal Dialog -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+      <div class="modal-header">
+        <i class="fa-solid fa-user-shield modal-icon"></i>
+        <h3>تسجيل دخول المسؤول / Connexion Admin</h3>
+        <p>الرجاء إدخال البريد الإلكتروني وكلمة المرور للوصول لصلاحيات الإدارة والتعديل.</p>
+      </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="field-group">
+          <label>البريد الإلكتروني / Email</label>
+          <input type="email" id="login-email" placeholder="imamboune@yahoo.fr" required>
+        </div>
+        <div class="field-group">
+          <label>كلمة المرور / Mot de passe</label>
+          <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-submit w-100">
+            <i class="fa-solid fa-right-to-bracket"></i> دخول / Se connecter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal Dialog -->
+  <div class="modal-overlay" id="change-pass-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeChangePassModal()">&times;</button>
+      <div class="modal-header">
+        <i class="fa-solid fa-key modal-icon"></i>
+        <h3>تغيير كلمة مرور المسؤول / Changer le mot de passe</h3>
+        <p>قم بإدخال كلمة المرور الحالية وكلمة المرور الجديدة لحماية حساب المسؤول.</p>
+      </div>
+      <form onsubmit="handleChangePassword(event)">
+        <div class="field-group" style="margin-bottom: 12px;">
+          <label>كلمة المرور الحالية</label>
+          <input type="password" id="cur-pass-input" placeholder="أدخل كلمة المرور الحالية" required>
+        </div>
+        <div class="field-group" style="margin-bottom: 16px;">
+          <label>كلمة المرور الجديدة</label>
+          <input type="password" id="new-pass-input" placeholder="أدخل كلمة المرور الجديدة" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-reset" onclick="closeChangePassModal()">إلغاء</button>
+          <button type="submit" class="btn btn-submit">حفظ كلمة المرور</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Commune Management Modal -->
+  <div class="modal-overlay" id="commune-modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-close" onclick="closeCommuneModal()">&times;</button>
+      <div class="modal-header">
+        <i class="fa-solid fa-map-location-dot modal-icon"></i>
+        <h3>إدارة البلديات والمناطق / Gestion des Communes</h3>
+        <p>إضافة أو تعديل أو حذف البلديات المستخدمة في النظام</p>
+      </div>
+      
+      <!-- Add/Edit Commune Form -->
+      <form id="commune-form" onsubmit="handleCommuneSubmit(event)" style="margin-bottom: 20px; background: #f8faf8; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <input type="hidden" id="commune-edit-id" value="">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 180px;">
+            <label style="font-size: 12px; font-weight: 700;">اسم البلدية (بالعربية)</label>
+            <input type="text" id="commune-name-ar" placeholder="مثال: البلدية الأولى - باماكو" required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px;">
+          </div>
+          <div style="flex: 1; min-width: 180px;">
+            <label style="font-size: 12px; font-weight: 700;">Nom (en français)</label>
+            <input type="text" id="commune-name-fr" placeholder="Ex: Commune I - Bamako" required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px;">
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 6px;">
+            <button type="submit" class="btn btn-submit" style="padding: 8px 16px; font-size: 13px;">
+              <i class="fa-solid fa-plus"></i> <span id="commune-form-btn-txt">إضافة</span>
+            </button>
+            <button type="button" class="btn btn-reset" onclick="resetCommuneForm()" style="padding: 8px 12px; font-size: 13px;">إلغاء</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Communes List Table -->
+      <div style="max-height: 280px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: var(--primary-color); color: #fff; position: sticky; top: 0;">
+              <th style="padding: 8px; text-align: right;">البلدية (عربي)</th>
+              <th style="padding: 8px; text-align: left;">Commune (Français)</th>
+              <th style="padding: 8px; text-align: center; width: 90px;">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="communes-table-body">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Print Options & Commune Reordering Modal -->
+  <div class="modal-overlay" id="print-options-modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-close" onclick="closePrintOptionsModal()">&times;</button>
+      <div class="modal-header">
+        <i class="fa-solid fa-sliders modal-icon"></i>
+        <h3>خيارات وترتيب الطباعة / Options & Ordre d'Impression</h3>
+        <p>حدد ترتيب البلديات وعناصر التقرير المطبوع حسب الرغبة قبل إخراج التقرير</p>
+      </div>
+
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;">
+        <div style="flex: 1; min-width: 220px;">
+          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">طريقة ترتيب البلديات:</label>
+          <select id="print-sort-type" onchange="handlePrintSortChange()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px;">
+            <option value="custom">ترتيب مخصص (تحديد ترتيب البلديات يدوياً)</option>
+            <option value="centers_desc">الأعلى عدداً للمراكز أولاً</option>
+            <option value="students_desc">الأعلى عدداً للطلاب أولاً</option>
+            <option value="alpha">ترتيب أبجدي (أ - ي / A - Z)</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 220px;">
+          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">خيارات عرض الأعمدة:</label>
+          <label style="font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-top: 8px;">
+            <input type="checkbox" id="print-show-address" checked>
+            <span>استبدال عمود البلدية المكرر بعمود "العنوان والتفاصيل"</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Re-orderable Communes List Container -->
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 8px;">ترتيب البلديات المعروضة في التقرير (يمكنك تقديم أو تأخير أي بلدية):</label>
+        <div id="print-communes-order-list" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px; background: #fafafa;">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button type="button" class="btn btn-reset" onclick="closePrintOptionsModal()">إلغاء</button>
+        <button type="button" class="btn btn-submit" onclick="executePrintReport()" style="padding: 10px 24px; font-size: 14px;">
+          <i class="fa-solid fa-print"></i> معاينة وطباعة التقرير / Imprimer
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- View Details Modal Dialog -->
+  <div class="modal-overlay" id="details-modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+      <div class="modal-header">
+        <i class="fa-solid fa-mosque modal-icon"></i>
+        <h3 id="det-center-title">تفاصيل المركز القرآني</h3>
+      </div>
+      <div class="modal-body-content" id="det-content">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Official Registration Receipt Modal (Post-Submission UX) -->
+  <div class="modal-overlay" id="receipt-modal">
+    <div class="modal-card receipt-card">
+      <div class="receipt-header-banner">
+        <img src="logo.jpg" alt="Logo" class="receipt-logo-img">
+        <div class="receipt-header-titles">
+          <h3>اتحاد مدارس ومراكز تحفيظ القرآن الكريم في مالي</h3>
+          <p>Union des Écoles et Centres Coraniques en République du Mali</p>
+        </div>
+      </div>
+
+      <div class="receipt-success-badge">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="lbl-receipt-success-msg">تم تسجيل بيانات المركز القرآني بنجاح في المنصة الرسمية</span>
+      </div>
+
+      <div class="receipt-ref-container">
+        <span id="lbl-receipt-ref-title">رقم التسجيل المرجعي / N° de Référence</span>
+        <strong id="receipt-ref-code">AECMEC-2026-0000</strong>
+      </div>
+
+      <div class="receipt-body-grid" id="receipt-body-grid">
+        <!-- Summary items injected dynamically -->
+      </div>
+
+      <div class="receipt-actions-bar">
+        <button type="button" class="btn btn-submit" onclick="printRegistrationReceipt()"><i class="fa-solid fa-print"></i> <span id="lbl-btn-print-receipt">طباعة الإيصال الرسمية</span></button>
+        <button type="button" class="btn btn-reset" onclick="closeReceiptModalAndReset()"><i class="fa-solid fa-plus"></i> <span id="lbl-btn-new-registration">تسجيل مركز آخر</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Official Document Template -->
+  <div id="print-area" class="print-only">
+    <div class="print-header">
+      <div class="print-header-side print-header-ar">
+        <h2 class="print-country-ar">جمهورية مالي</h2>
+        <h3 class="print-union-ar">إتحاد مدارس ومراكز تحفيظ القرآن الكريم في مالي</h3>
+      </div>
+
+      <div class="print-header-center">
+        <img src="logo.jpg" alt="شعار الاتحاد" class="print-logo-img">
+        <p class="print-doc-title">تقرير إحصائي لحصر المراكز القرآنية بالبلديات</p>
+      </div>
+
+      <div class="print-header-side print-header-fr">
+        <h2 class="print-country-fr">République du Mali</h2>
+        <h3 class="print-union-fr">Union des Écoles et Centres Coraniques au Mali</h3>
+        <p class="print-acronym">AECMEC - MALI</p>
+      </div>
+    </div>
+
+    <div class="print-meta-bar">
+      <span>التاريخ / Date: <strong id="print-date"></strong></span>
+      <span>البلدية المحددة / Commune: <strong id="print-commune-name">الكل</strong></span>
+    </div>
+    
+    <div class="print-stats-summary" id="print-stats-box">
+      <!-- Injected before print -->
+    </div>
+
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>اسم المركز (عربي / Fr)</th>
+          <th>المدير / المشرف</th>
+          <th>البلدية</th>
+          <th>الهاتف</th>
+          <th>بنين</th>
+          <th>بنات</th>
+          <th>المجموع</th>
+          <th>عضو بالاتحاد</th>
+        </tr>
+      </thead>
+      <tbody id="print-table-body">
+        <!-- Injected before print -->
+      </tbody>
+    </table>
+
+    <div class="print-signatures">
+      <div class="sig-box">
+        <p>مسؤول الإحصاء والتسجيل</p>
+        <div class="sig-line"></div>
+      </div>
+
+      <div class="print-seal-container">
+        <div class="official-seal-badge">
+          <img src="logo.jpg" alt="الختم الرسمي" class="seal-img">
+          <span>الختم الرسمي للاتحاد</span>
+        </div>
+      </div>
+
+      <div class="sig-box">
+        <p>رئيس الاتحاد</p>
+        <div class="sig-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
