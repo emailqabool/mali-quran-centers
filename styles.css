@@ -1057,7 +1057,8 @@ html[dir="ltr"] .modal-close {
   body * {
     visibility: hidden;
   }
-  
+
+  /* When printing statistical report */
   body:not(.printing-receipt) #print-area,
   body:not(.printing-receipt) #print-area * {
     visibility: visible;
@@ -1076,9 +1077,18 @@ html[dir="ltr"] .modal-close {
     color: #000000;
   }
 
+  body:not(.printing-receipt) #receipt-print-area {
+    display: none !important;
+  }
+
+  /* When printing individual registration receipt */
+  body.printing-receipt #print-area {
+    display: none !important;
+  }
+
   body.printing-receipt #receipt-print-area,
   body.printing-receipt #receipt-print-area * {
-    visibility: visible;
+    visibility: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -1089,7 +1099,7 @@ html[dir="ltr"] .modal-close {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 20px;
+    padding: 15px;
     background: #ffffff;
     color: #000000;
   }

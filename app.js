@@ -1231,8 +1231,16 @@ function printRegistrationReceipt() {
   }
 
   document.body.classList.add('printing-receipt');
+
+  const cleanupPrint = () => {
+    document.body.classList.remove('printing-receipt');
+    window.removeEventListener('afterprint', cleanupPrint);
+  };
+  window.addEventListener('afterprint', cleanupPrint);
+
   window.print();
-  document.body.classList.remove('printing-receipt');
+
+  setTimeout(cleanupPrint, 3000);
 }
 
 function getFilteredData() {
