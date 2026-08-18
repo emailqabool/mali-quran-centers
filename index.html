@@ -618,6 +618,7 @@
   <!-- Official Registration Receipt Modal (Post-Submission UX) -->
   <div class="modal-overlay" id="receipt-modal">
     <div class="modal-card receipt-card">
+      <button class="modal-close" onclick="closeReceiptModalAndReset()">&times;</button>
       <div class="receipt-header-banner">
         <img src="logo.jpg" alt="Logo" class="receipt-logo-img">
         <div class="receipt-header-titles">
@@ -641,8 +642,8 @@
       </div>
 
       <div class="receipt-actions-bar">
-        <button type="button" class="btn btn-submit" onclick="printRegistrationReceipt()"><i class="fa-solid fa-print"></i> <span id="lbl-btn-print-receipt">طباعة الإيصال الرسمية</span></button>
-        <button type="button" class="btn btn-reset" onclick="closeReceiptModalAndReset()"><i class="fa-solid fa-plus"></i> <span id="lbl-btn-new-registration">تسجيل مركز آخر</span></button>
+        <button type="button" class="btn btn-submit" onclick="closeReceiptModalAndReset()"><i class="fa-solid fa-plus"></i> <span id="lbl-btn-new-registration">إدخال مركز آخر</span></button>
+        <button type="button" class="btn btn-reset" onclick="closeReceiptModalAndReset()"><i class="fa-solid fa-xmark"></i> <span id="lbl-btn-close-receipt">إغلاق النافذة</span></button>
       </div>
     </div>
   </div>
