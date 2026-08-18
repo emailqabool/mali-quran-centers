@@ -1842,7 +1842,10 @@ function executePrintReport() {
   const now = new Date();
   const isAr = currentLang === 'ar';
 
-  document.getElementById('print-date').textContent = now.toLocaleDateString(isAr ? 'ar-MA' : 'fr-FR');
+  const dayStr = String(now.getDate()).padStart(2, '0');
+  const monthStr = String(now.getMonth() + 1).padStart(2, '0');
+  const yearStr = now.getFullYear();
+  document.getElementById('print-date').textContent = `${dayStr} / ${monthStr} / ${yearStr}`;
   document.getElementById('print-commune-name').textContent = getCommuneDisplayName(selectedCommune, currentLang);
 
   // Update Print Table Headers based on language & address column choice
@@ -1854,15 +1857,15 @@ function executePrintReport() {
 
     printThead.innerHTML = `
       <tr>
-        <th>#</th>
-        <th>${isAr ? 'اسم المركز القرآني' : 'Nom du centre'}</th>
-        <th>${isAr ? 'المدير / المشرف' : 'Directeur / Responsable'}</th>
-        <th>${col4Title}</th>
-        <th>${isAr ? 'الهاتف' : 'Téléphone'}</th>
-        <th>${isAr ? 'بنين' : 'Garçons'}</th>
-        <th>${isAr ? 'بنات' : 'Filles'}</th>
-        <th>${isAr ? 'المجموع' : 'Total'}</th>
-        <th>${isAr ? 'عضوية الاتحاد' : 'Adhésion'}</th>
+        <th style="width: 30px;">#</th>
+        <th style="width: 24%;">${isAr ? 'اسم المركز القرآني' : 'Nom du centre'}</th>
+        <th style="width: 18%;">${isAr ? 'المدير / المشرف' : 'Directeur / Responsable'}</th>
+        <th style="width: 18%;">${col4Title}</th>
+        <th style="width: 14%; white-space: nowrap;">${isAr ? 'الهاتف' : 'Téléphone'}</th>
+        <th style="width: 55px;">${isAr ? 'بنين' : 'Garçons'}</th>
+        <th style="width: 55px;">${isAr ? 'بنات' : 'Filles'}</th>
+        <th style="width: 60px;">${isAr ? 'المجموع' : 'Total'}</th>
+        <th style="width: 80px;">${isAr ? 'عضوية الاتحاد' : 'Adhésion'}</th>
       </tr>
     `;
   }
@@ -1946,12 +1949,15 @@ function executePrintReport() {
           <td><strong>${centerName}</strong></td>
           <td>${directorName}</td>
           <td>${col4Val}</td>
-          <td>${center.phone}</td>
+          <td style="white-space: nowrap; direction: ltr;">${center.phone}</td>
           <td>${center.boys}</td>
           <td>${center.girls}</td>
           <td><strong>${center.total}</strong></td>
           <td>${membershipText}</td>
         `;
+        printTbody.appendChild(tr);
+      });
+    });
         printTbody.appendChild(tr);
       });
     });
