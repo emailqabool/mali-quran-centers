@@ -1097,9 +1097,13 @@ function updateFormProgress() {
   if (txtEl) txtEl.textContent = `${percent}%`;
 }
 
+let currentReceiptData = null;
+
 function showReceiptModal(center) {
   const isAr = currentLang === 'ar';
-  const refCode = `REC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  const refCode = `AECMEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  currentReceiptData = { center, refCode };
 
   const refEl = document.getElementById('receipt-ref-code');
   if (refEl) refEl.textContent = refCode;
@@ -1117,7 +1121,7 @@ function showReceiptModal(center) {
       </div>
       <div class="receipt-item">
         <label>${isAr ? 'البلدية' : 'Commune'}</label>
-        <span>${center.commune}</span>
+        <span>${getCommuneDisplayName(center.commune, currentLang)}</span>
       </div>
       <div class="receipt-item">
         <label>${isAr ? 'رقم الهاتف' : 'Téléphone'}</label>
@@ -1145,7 +1149,57 @@ function closeReceiptModalAndReset() {
 }
 
 function printRegistrationReceipt() {
+  if (!currentReceiptData) return;
+  const { center, refCode } = currentReceiptData;
+  const isAr = currentLang === 'ar';
+
+  const printRefEl = document.getElementById('receipt-print-ref-code');
+  const printDateEl = document.getElementById('receipt-print-date');
+
+  if (printRefEl) printRefEl.textContent = refCode;
+  if (printDateEl) printDateEl.textContent = new Date().toLocaleDateString(isAr ? 'ar-MA' : 'fr-FR');
+
+  const tbody = document.getElementById('receipt-print-table-body');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <th style="width:32%; text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'اسم المركز القرآني' : 'Nom du centre'}</th>
+        <td><strong>${center.name_ar}</strong> / <small>${center.name_fr}</small></td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'اسم المدير / المشرف' : 'Directeur / Responsable'}</th>
+        <td>${center.director_ar} / <small>${center.director_fr}</small></td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'البلدية والموقع' : 'Commune'}</th>
+        <td>${getCommuneDisplayName(center.commune, currentLang)}</td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'العنوان التفصيلي' : 'Adresse'}</th>
+        <td>${isAr ? (center.address_ar || center.name_ar) : (center.address_fr || center.name_fr)}</td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'رقم الهاتف' : 'Téléphone'}</th>
+        <td>${center.phone}</td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'إجمالي عدد الطلاب' : 'Total Élèves'}</th>
+        <td><strong>${center.total} طالب وطالبة</strong> (بنين: ${center.boys} | بنات: ${center.girls})</td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'نوع فئات الطلاب' : 'Type de centre'}</th>
+        <td>${center.gender_type === 'garcons' ? (isAr ? 'بنين فقط' : 'Garçons uniquement') : center.gender_type === 'filles' ? (isAr ? 'بنات فقط' : 'Filles uniquement') : (isAr ? 'مشترك (بنين وبنات)' : 'Mixte')}</td>
+      </tr>
+      <tr>
+        <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'عضوية الاتحاد' : 'Adhésion AECMEC'}</th>
+        <td>${center.membership === 'Oui' ? (isAr ? 'عضو منضم بالاتحاد' : 'Membre AECMEC') : (isAr ? 'غير منضم بالاتحاد' : 'Non membre')}</td>
+      </tr>
+    `;
+  }
+
+  document.body.classList.add('printing-receipt');
   window.print();
+  document.body.classList.remove('printing-receipt');
 }
 
 function getFilteredData() {

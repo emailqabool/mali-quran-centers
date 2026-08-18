@@ -1058,13 +1058,32 @@ html[dir="ltr"] .modal-close {
     visibility: hidden;
   }
   
-  #print-area, #print-area * {
+  body:not(.printing-receipt) #print-area,
+  body:not(.printing-receipt) #print-area * {
     visibility: visible;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
   
-  #print-area {
+  body:not(.printing-receipt) #print-area {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: #ffffff;
+    color: #000000;
+  }
+
+  body.printing-receipt #receipt-print-area,
+  body.printing-receipt #receipt-print-area * {
+    visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.printing-receipt #receipt-print-area {
     display: block !important;
     position: absolute;
     top: 0;
