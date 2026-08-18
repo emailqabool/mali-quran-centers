@@ -497,6 +497,18 @@ html[dir="ltr"] .public-notice-banner {
   color: var(--danger-color);
 }
 
+.phone-display, .ltr-text, .ltr-input, .receipt-ref-code, #receipt-print-ref-code {
+  direction: ltr !important;
+  unicode-bidi: embed !important;
+  display: inline-block;
+  font-family: inherit;
+}
+
+input[type="tel"] {
+  direction: ltr !important;
+  unicode-bidi: embed !important;
+}
+
 input[type="text"],
 input[type="tel"],
 input[type="number"],

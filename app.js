@@ -927,7 +927,7 @@ function renderTable() {
           <small class="text-muted">${center.director_fr}</small>
         </td>
         <td><span class="commune-pill">${getCommuneDisplayName(center.commune)}</span></td>
-        <td><i class="fa-solid fa-phone" style="font-size: 11px; opacity:0.7;"></i> ${center.phone}</td>
+        <td><i class="fa-solid fa-phone" style="font-size: 11px; opacity:0.7;"></i> <span class="phone-display">${center.phone}</span></td>
         <td>
           <strong>${center.total}</strong><br>
           <small class="text-muted">(👨 ${center.boys} | 👩 ${center.girls})</small>
@@ -1158,7 +1158,7 @@ function showReceiptModal(center) {
       </div>
       <div class="receipt-item">
         <label>${isAr ? 'رقم الهاتف' : 'Téléphone'}</label>
-        <span>${center.phone}</span>
+        <span class="phone-display">${center.phone}</span>
       </div>
       <div class="receipt-item">
         <label>${isAr ? 'عدد الطلاب والطالبات' : 'Nombre d\'élèves'}</label>
@@ -1213,7 +1213,7 @@ function printRegistrationReceipt() {
       </tr>
       <tr>
         <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'رقم الهاتف' : 'Téléphone'}</th>
-        <td>${center.phone}</td>
+        <td><span class="phone-display">${center.phone}</span></td>
       </tr>
       <tr>
         <th style="text-align:${isAr ? 'right' : 'left'}; font-weight:bold; background:#f0f7f2;">${isAr ? 'إجمالي عدد الطلاب' : 'Total Élèves'}</th>
@@ -1305,7 +1305,7 @@ function viewDetails(id) {
       <div><strong>اسم المركز / Nom:</strong><br>${center.name_ar}<br><small>${center.name_fr}</small></div>
       <div><strong>اسم المدير / Directeur:</strong><br>${center.director_ar}<br><small>${center.director_fr}</small></div>
       <div><strong>البلدية / Commune:</strong><br>${center.commune}</div>
-      <div><strong>الهاتف / Téléphone:</strong><br>${center.phone}</div>
+      <div><strong>الهاتف / Téléphone:</strong><br><span class="phone-display">${center.phone}</span></div>
       <div><strong>عضوية الاتحاد / Membre:</strong><br>${center.membership === 'Oui' ? 'نعم (Oui)' : 'لا (Non)'}</div>
       <div><strong>تفاصيل الطلاب / Élèves:</strong><br>الإجمالي: ${center.total} (بنين: ${center.boys} - بنات: ${center.girls})</div>
       <div><strong>العنوان / Adresse:</strong><br>${center.address_ar || '-'} / ${center.address_fr || '-'}</div>
