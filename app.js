@@ -836,6 +836,7 @@ function handleFormSubmit(e) {
     renderTable();
     updateStats();
     showReceiptModal(newCenter);
+    resetForm();
     return;
   }
 
