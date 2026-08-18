@@ -1991,9 +1991,6 @@ function executePrintReport() {
         printTbody.appendChild(tr);
       });
     });
-        printTbody.appendChild(tr);
-      });
-    });
 
     // 3. Commune Subtotal Row
     const commTotalTr = document.createElement('tr');
