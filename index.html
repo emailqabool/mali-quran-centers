@@ -333,13 +333,12 @@
           <!-- Quick Filter Pills Bar -->
           <div class="quick-filter-pills">
             <button class="pill-btn filter-pill active" data-filter="ALL"><i class="fa-solid fa-layer-group"></i> <span id="lbl-pill-all">جميع المراكز</span></button>
-            <button class="pill-btn filter-pill" data-filter="approved"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> <span id="lbl-pill-approved">المعتمدة فقط 🟢</span></button>
-            <button class="pill-btn filter-pill" data-filter="pending"><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> <span id="lbl-pill-pending">قيد المراجعة 🟡 <span id="pending-moderation-badge" class="kpi-pending-badge" style="display:none;">0</span></span></button>
-            <button class="pill-btn filter-pill" data-filter="rejected"><i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> <span id="lbl-pill-rejected">المرفوضة 🔴</span></button>
             <button class="pill-btn filter-pill" data-filter="garcons"><i class="fa-solid fa-child"></i> <span id="lbl-pill-boys">بنين فقط</span></button>
             <button class="pill-btn filter-pill" data-filter="filles"><i class="fa-solid fa-child-dress"></i> <span id="lbl-pill-girls">بنات فقط</span></button>
             <button class="pill-btn filter-pill" data-filter="mixte"><i class="fa-solid fa-people-hold"></i> <span id="lbl-pill-mixte">مشتركة</span></button>
             <button class="pill-btn filter-pill" data-filter="union"><i class="fa-solid fa-certificate"></i> <span id="lbl-pill-union">أعضاء الاتحاد</span></button>
+            <button class="pill-btn filter-pill pill-admin-only" data-filter="pending"><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> <span id="lbl-pill-pending">قيد المراجعة 🟡 <span id="pending-moderation-badge" class="kpi-pending-badge" style="display:none;">0</span></span></button>
+            <button class="pill-btn filter-pill pill-admin-only" data-filter="rejected"><i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> <span id="lbl-pill-rejected">المرفوضة 🔴</span></button>
           </div>
 
           <!-- Controls Bar (Filter, Search, Export Excel, Print) -->
@@ -367,7 +366,7 @@
               </select>
             </div>
 
-            <div class="control-group filter-select">
+            <div class="control-group filter-select" id="filter-status-group">
               <label for="filter-status" id="lbl-filter-status">حالة التدقيق:</label>
               <select id="filter-status">
                 <option value="ALL" id="opt-filt-status-all">الكل</option>

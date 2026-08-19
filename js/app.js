@@ -1,13 +1,13 @@
 /* ----------------------------------------------------
    Quranic Centers Survey & Management System - Mali
-   Standalone Production Bundle (Bulletproof Initializer & Delegation)
+   Complete Production Engine & Window Bridge
    ---------------------------------------------------- */
 
 (function () {
   'use strict';
 
   // ====================================================
-  // 1. CONFIG & CONSTANTS
+  // 1. CONFIG & DATA
   // ====================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx83PCEqT39I-X5GHyuAII2QkpEz_zLOYX_HCp2G6U8UvhGGMhpu6xzqMoO7yU-11R5dw/exec";
   const SALT = "AECMEC_MALI_QURANIC_CENTERS_SALT_2026_SECURE";
@@ -141,8 +141,8 @@
       subAppTitle: "اتحاد المدارس والمراكز القرآنية في جمهورية مالي",
       loginBtn: "دخول المسؤول",
       logoutBtn: "تسجيل الخروج",
-      submitSuccess: "تم تسجيل بيانات المركز بنجاح! البيانات الآن قيد المراجعة والتدقيق.",
-      confirmDelete: "هل أنت تأكد من حذف هذا المركز القرآني؟",
+      submitSuccess: "تم تسجيل بيانات المركز بنجاح! شكراً لمشاركتكم.",
+      confirmDelete: "هل أنت متأكد من حذف هذا المركز القرآني؟",
       accessDenied: "هذه الميزة مخصصة لمسؤول النظام فقط. يرجى تسجيل الدخول أولاً.",
       
       mobileMenuTitle: "قائمة النظام",
@@ -213,12 +213,12 @@
       boysPrefix: "بنين:",
       girlsPrefix: "بنات:",
 
-      publicNotice: "مرحباً بكم! الاستبيان مفتوح للجميع لإدخال بيانات المركز القرآني مباشرة. تخضع البيانات المعتمدة لتدقيق وتوثيق مسؤول الاتحاد.",
+      publicNotice: "مرحباً بكم! الاستبيان مفتوح للجميع لإدخال بيانات المركز القرآني مباشرة. صلاحيات الإدارة والطباعة وتدقيق البيانات مخصصة لمسؤول النظام.",
       welcomeTitle: "مرحباً بكم في المنصة الرسمية لحصر المراكز القرآنية في مالي",
       welcomeDesc: "تعبئة البيانات متاحة لكافة مدراء ومشرفي المراكز والمدارس القرآنية في مالي، ولا تتطلب أي تسجيل دخول وتستغرق أقل من دقيقتين.",
       progressTxt: "نسبة إكمال بيانات الاستبيان:",
 
-      kpiTotalCenters: "إجمالي المراكز المعتمدة",
+      kpiTotalCenters: "إجمالي المراكز المسجلة",
       kpiTotalStudents: "إجمالي الطلاب والطالبات",
       kpiTopCommune: "البلدية الأكثر تسجيلاً",
       kpiUnionRatio: "نسبة الأعضاء بالاتحاد",
@@ -242,7 +242,7 @@
       btnEdit: "تعديل",
       btnDelete: "حذف",
 
-      receiptSuccessMsg: "تم تسجيل بيانات المركز القرآني بنجاح وهي الآن قيد المراجعة والتدقيق من الاتحاد",
+      receiptSuccessMsg: "تم تسجيل بيانات المركز القرآني بنجاح في المنصة الرسمية",
       receiptRefTitle: "رقم التسجيل المرجعي / N° de Référence",
       btnPrintReceipt: "طباعة الإيصال الرسمية",
       btnNewReg: "تسجيل مركز آخر",
@@ -253,7 +253,7 @@
       subAppTitle: "Union des Écoles et Centres Coraniques en République du Mali",
       loginBtn: "Connexion Admin",
       logoutBtn: "Déconnexion",
-      submitSuccess: "Les informations du centre ont été enregistrées avec succès ! Elles sont en cours de modération.",
+      submitSuccess: "Les informations du centre ont été enregistrées avec succès !",
       confirmDelete: "Êtes-vous sûr de vouloir supprimer ce centre coranique ?",
       accessDenied: "Cette fonctionnalité est réservée à l'administrateur. Veuillez vous connecter.",
 
@@ -325,12 +325,12 @@
       boysPrefix: "Garçons :",
       girlsPrefix: "Filles :",
 
-      publicNotice: "Bienvenue ! Le formulaire est ouvert à tous pour saisir directement les données du centre coranique. Les données approuvées sont validées par l'Union.",
+      publicNotice: "Bienvenue ! Le formulaire est ouvert à tous pour saisir directement les données du centre coranique. L'accès administrateur est réservé aux responsables du système.",
       welcomeTitle: "Bienvenue sur la plateforme officielle de recensement",
       welcomeDesc: "Ce formulaire est ouvert à tous les responsables et directeurs de centres coraniques au Mali. Aucune connexion requise (moins de 2 minutes).",
       progressTxt: "Taux de complétion du formulaire :",
 
-      kpiTotalCenters: "Centres approuvés",
+      kpiTotalCenters: "Centres enregistrés",
       kpiTotalStudents: "Total des élèves",
       kpiTopCommune: "Commune principale",
       kpiUnionRatio: "Taux d'adhésion",
@@ -354,7 +354,7 @@
       btnEdit: "Modifier",
       btnDelete: "Supprimer",
 
-      receiptSuccessMsg: "La fiche du centre coranique a été enregistrée avec succès ! Elle est en cours de modération.",
+      receiptSuccessMsg: "La fiche du centre coranique a été enregistrée avec succès !",
       receiptRefTitle: "N° de Référence / رقم التسجيل المرجعي",
       btnPrintReceipt: "Imprimer le reçu officiel",
       btnNewReg: "Inscrire un autre centre",
@@ -363,7 +363,7 @@
   };
 
   // ====================================================
-  // 3. STATE MANAGEMENT
+  // 3. STATE
   // ====================================================
   let currentLang = 'ar';
   let centersList = [];
@@ -389,7 +389,7 @@
       .replace(/\//g, '&#x2F;');
   }
 
-  function checkRateLimit(actionKey, cooldownSeconds = 10) {
+  function checkRateLimit(actionKey, cooldownSeconds = 5) {
     const now = Date.now();
     const lastTime = rateLimitMap.get(actionKey) || 0;
     if (now - lastTime < cooldownSeconds * 1000) {
@@ -448,7 +448,7 @@
   }
 
   // ====================================================
-  // 4. AUTHENTICATION & SECURITY
+  // 4. AUTHENTICATION
   // ====================================================
   async function hashText(plainText) {
     const encoder = new TextEncoder();
@@ -472,9 +472,8 @@
   function updateAuthUI() {
     const dict = I18N[currentLang];
     const authContainer = document.getElementById('auth-status-container');
-    const adminSection = document.getElementById('admin-communes-section');
-    const printAdminControls = document.getElementById('admin-print-controls');
 
+    // Strict toggle of body.admin-mode
     document.body.classList.toggle('admin-mode', isAdminLoggedIn);
 
     if (authContainer) {
@@ -482,13 +481,11 @@
         authContainer.innerHTML = `
           <div style="display: flex; align-items: center; gap: 8px;">
             <span class="badge badge-primary"><i class="fa-solid fa-user-shield"></i> مسؤول النظام</span>
-            <button class="footer-auth-link" id="btn-logout" title="${dict.logoutBtn}" style="color: #ef4444; border-color: #fca5a5; font-weight: bold; cursor: pointer;">
+            <button class="footer-auth-link" id="btn-logout" onclick="handleAdminLogout()" title="${dict.logoutBtn}" style="color: #ef4444; border-color: #fca5a5; font-weight: bold; cursor: pointer;">
               <i class="fa-solid fa-right-from-bracket"></i> <span>${dict.logoutBtn}</span>
             </button>
           </div>
         `;
-        const btnLogout = document.getElementById('btn-logout');
-        if (btnLogout) btnLogout.onclick = handleAdminLogout;
       } else {
         authContainer.innerHTML = `
           <button type="button" class="footer-auth-link" id="btn-login-trigger" onclick="openLoginModal()" style="cursor: pointer;">
@@ -496,13 +493,6 @@
           </button>
         `;
       }
-    }
-
-    if (adminSection) {
-      adminSection.style.display = isAdminLoggedIn ? 'block' : 'none';
-    }
-    if (printAdminControls) {
-      printAdminControls.style.display = isAdminLoggedIn ? 'block' : 'none';
     }
   }
 
@@ -513,10 +503,11 @@
       localStorage.setItem('mali_quran_admin_auth', 'true');
       updateAuthUI();
       renderTable();
+      updateStats();
       updateAdminKPIStats();
       return { success: true };
     } else {
-      return { success: false, message: 'كلمة المرور غير صحيحة / Mot de passe incorrect' };
+      return { success: false, message: currentLang === 'ar' ? 'كلمة المرور غير صحيحة' : 'Mot de passe incorrect' };
     }
   }
 
@@ -525,6 +516,7 @@
     localStorage.removeItem('mali_quran_admin_auth');
     updateAuthUI();
     renderTable();
+    updateStats();
     updateAdminKPIStats();
   }
 
@@ -590,20 +582,26 @@
     return centersList.filter(center => {
       const status = center.status || STATUS_APPROVED;
 
-      if (activeFilterStatus !== 'ALL') {
-        if (status !== activeFilterStatus) return false;
-      } else if (!isAdminLoggedIn) {
+      // In non-admin mode, always show approved only
+      if (!isAdminLoggedIn) {
         if (status !== STATUS_APPROVED) return false;
+      } else if (activeFilterStatus !== 'ALL') {
+        if (status !== activeFilterStatus) return false;
       }
 
       if (activeFilterCommune !== 'ALL' && center.commune !== activeFilterCommune) return false;
       if (activeFilterMembership !== 'ALL' && center.membership !== activeFilterMembership) return false;
 
       if (activePillFilter !== 'ALL') {
-        if (activePillFilter === 'UNION' && center.membership !== 'Oui') return false;
-        if (activePillFilter === 'mixte' && center.gender_type !== 'mixte') return false;
-        if (activePillFilter === 'filles' && center.gender_type !== 'filles') return false;
-        if (activePillFilter === 'garcons' && center.gender_type !== 'garcons') return false;
+        if (activePillFilter === 'UNION' || activePillFilter === 'union') {
+          if (center.membership !== 'Oui') return false;
+        } else if (activePillFilter === 'mixte') {
+          if (center.gender_type !== 'mixte') return false;
+        } else if (activePillFilter === 'filles') {
+          if (center.gender_type !== 'filles') return false;
+        } else if (activePillFilter === 'garcons') {
+          if (center.gender_type !== 'garcons') return false;
+        }
       }
 
       if (searchQuery.trim() !== '') {
@@ -671,29 +669,29 @@
         actionsHTML = `
           <div class="table-actions">
             ${status === STATUS_PENDING ? `
-              <button class="btn-sm btn-approve" data-action="approve" data-id="${c.id}" title="${dict.btnApprove}">
+              <button class="btn-sm btn-approve" onclick="handleApproveCenter(${c.id})" title="${dict.btnApprove}">
                 <i class="fa-solid fa-check"></i>
               </button>
-              <button class="btn-sm btn-reject" data-action="reject" data-id="${c.id}" title="${dict.btnReject}">
+              <button class="btn-sm btn-reject" onclick="handleRejectCenter(${c.id})" title="${dict.btnReject}">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             ` : ''}
             ${status === STATUS_REJECTED ? `
-              <button class="btn-sm btn-approve" data-action="approve" data-id="${c.id}" title="${dict.btnApprove}">
+              <button class="btn-sm btn-approve" onclick="handleApproveCenter(${c.id})" title="${dict.btnApprove}">
                 <i class="fa-solid fa-check"></i>
               </button>
             ` : ''}
-            <button class="btn-sm btn-edit" data-action="edit" data-id="${c.id}" title="${dict.btnEdit}">
+            <button class="btn-sm btn-edit" onclick="editCenterForm(${c.id})" title="${dict.btnEdit}">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button class="btn-sm btn-delete" data-action="delete" data-id="${c.id}" title="${dict.btnDelete}">
+            <button class="btn-sm btn-delete" onclick="handleDeleteCenter(${c.id})" title="${dict.btnDelete}">
               <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
         `;
       } else {
         actionsHTML = `
-          <button class="btn-sm btn-view-receipt" data-action="receipt" data-id="${c.id}" title="عرض الإيصال">
+          <button class="btn-sm btn-view-receipt" onclick="viewCenterReceipt(${c.id})" title="عرض الإيصال">
             <i class="fa-solid fa-receipt"></i>
           </button>
         `;
@@ -726,22 +724,23 @@
   function updateTableFooters(filtered, dict) {
     const visibleCountEl = document.getElementById('visible-count');
     const visibleStudentsEl = document.getElementById('visible-students');
-
-    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    const visibleBoysEl = document.getElementById('visible-boys');
+    const visibleGirlsEl = document.getElementById('visible-girls');
 
     const totalStudents = filtered.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
     const totalBoys = filtered.reduce((acc, c) => acc + (Number(c.boys) || 0), 0);
     const totalGirls = filtered.reduce((acc, c) => acc + (Number(c.girls) || 0), 0);
 
-    if (visibleStudentsEl) {
-      visibleStudentsEl.textContent = `${totalStudents} (${dict.boysPrefix} ${totalBoys} | ${dict.girlsPrefix} ${totalGirls})`;
-    }
+    if (visibleCountEl) visibleCountEl.textContent = filtered.length;
+    if (visibleStudentsEl) visibleStudentsEl.textContent = totalStudents;
+    if (visibleBoysEl) visibleBoysEl.textContent = totalBoys;
+    if (visibleGirlsEl) visibleGirlsEl.textContent = totalGirls;
   }
 
   function updateStats() {
     const approvedCenters = centersList.filter(c => (c.status || STATUS_APPROVED) === STATUS_APPROVED);
-    const elCenters = document.getElementById('sidebar-stat-centers');
-    const elStudents = document.getElementById('sidebar-stat-students');
+    const elCenters = document.getElementById('side-stat-centers');
+    const elStudents = document.getElementById('side-stat-students');
 
     if (elCenters) elCenters.textContent = approvedCenters.length;
     const totalStudents = approvedCenters.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
@@ -794,43 +793,12 @@
   }
 
   // ====================================================
-  // 6. MODAL & ACTION HANDLERS
+  // 6. FORM & ACTIONS
   // ====================================================
-  function showReceiptModal(centerData) {
-    const modal = document.getElementById('receipt-modal');
-    if (!modal) return;
-
-    const dict = I18N[currentLang];
-    const refCodeEl = document.getElementById('receipt-modal-ref');
-    const bodyTable = document.getElementById('receipt-modal-table-body');
-    const noteEl = document.getElementById('receipt-pending-note');
-
-    if (refCodeEl) refCodeEl.textContent = centerData.ref_code || 'REC-2026-XXXX';
-    if (noteEl) noteEl.textContent = dict.receiptPendingNote;
-
-    const statusBadge = centerData.status === STATUS_APPROVED
-      ? `<span class="badge badge-success">${dict.statusApproved}</span>`
-      : `<span class="badge badge-warning">${dict.statusPending}</span>`;
-
-    if (bodyTable) {
-      bodyTable.innerHTML = `
-        <tr><th>${dict.thCenterName}</th><td>${centerData.name_ar} / ${centerData.name_fr}</td></tr>
-        <tr><th>${dict.thDirectorName}</th><td>${centerData.director_ar} / ${centerData.director_fr}</td></tr>
-        <tr><th>${dict.thCommune}</th><td>${centerData.commune}</td></tr>
-        <tr><th>${dict.thPhone}</th><td>${centerData.phone}</td></tr>
-        <tr><th>${dict.thStudentsCount}</th><td>${centerData.total} (${dict.boysPrefix} ${centerData.boys} | ${dict.girlsPrefix} ${centerData.girls})</td></tr>
-        <tr><th>${dict.thUnionMembership}</th><td>${centerData.membership === 'Oui' ? dict.optMemYes : dict.optMemNo}</td></tr>
-        <tr><th>${dict.thStatus}</th><td>${statusBadge}</td></tr>
-      `;
-    }
-
-    modal.style.display = 'flex';
-  }
-
   function handleFormSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
 
-    const rate = checkRateLimit('survey_submit', 5);
+    const rate = checkRateLimit('survey_submit', 3);
     if (!rate.allowed) {
       alert(currentLang === 'ar' 
         ? `يرجى الانتظار ${rate.remainingSeconds} ثوانٍ قبل تقديم طلب آخر.` 
@@ -845,8 +813,8 @@
     const nameFr = xssClean(document.getElementById('name_fr').value.trim());
     const directorAr = xssClean(document.getElementById('director_ar').value.trim());
     const directorFr = xssClean(document.getElementById('director_fr').value.trim());
-    const addressAr = xssClean(document.getElementById('address_ar').value.trim());
-    const addressFr = xssClean(document.getElementById('address_fr').value.trim());
+    const addressAr = xssClean((document.getElementById('address_ar') ? document.getElementById('address_ar').value : '').trim());
+    const addressFr = xssClean((document.getElementById('address_fr') ? document.getElementById('address_fr').value : '').trim());
     const commune = document.getElementById('commune').value;
     const phone = xssClean(document.getElementById('phone').value.trim());
     const boys = parseInt(document.getElementById('boys_count').value) || 0;
@@ -922,6 +890,8 @@
     if (form) form.reset();
     const editIdInput = document.getElementById('center_edit_id');
     if (editIdInput) editIdInput.value = '';
+    const formCardTitle = document.getElementById('form-card-title');
+    if (formCardTitle) formCardTitle.textContent = I18N[currentLang].formTitleNew;
     handleStudentCountInput();
     updateFormProgress();
   }
@@ -930,15 +900,18 @@
     const center = centersList.find(c => String(c.id) === String(id));
     if (!center) return;
 
-    switchTab('tab-survey');
+    scrollToSection('survey-section');
+
+    const formCardTitle = document.getElementById('form-card-title');
+    if (formCardTitle) formCardTitle.textContent = I18N[currentLang].formTitleEdit;
 
     document.getElementById('center_edit_id').value = center.id;
     document.getElementById('name_ar').value = center.name_ar;
     document.getElementById('name_fr').value = center.name_fr;
     document.getElementById('director_ar').value = center.director_ar;
     document.getElementById('director_fr').value = center.director_fr;
-    document.getElementById('address_ar').value = center.address_ar || '';
-    document.getElementById('address_fr').value = center.address_fr || '';
+    if (document.getElementById('address_ar')) document.getElementById('address_ar').value = center.address_ar || '';
+    if (document.getElementById('address_fr')) document.getElementById('address_fr').value = center.address_fr || '';
     document.getElementById('commune').value = center.commune;
     document.getElementById('phone').value = center.phone;
     document.getElementById('boys_count').value = center.boys;
@@ -947,6 +920,43 @@
 
     handleStudentCountInput();
     updateFormProgress();
+  }
+
+  function handleApproveCenter(id) {
+    const idx = centersList.findIndex(c => String(c.id) === String(id));
+    if (idx !== -1) {
+      centersList[idx].status = STATUS_APPROVED;
+      saveCentersToStorage();
+      renderTable();
+      updateStats();
+      updateAdminKPIStats();
+    }
+  }
+
+  function handleRejectCenter(id) {
+    const idx = centersList.findIndex(c => String(c.id) === String(id));
+    if (idx !== -1) {
+      centersList[idx].status = STATUS_REJECTED;
+      saveCentersToStorage();
+      renderTable();
+      updateStats();
+      updateAdminKPIStats();
+    }
+  }
+
+  function handleDeleteCenter(id) {
+    if (confirm(I18N[currentLang].confirmDelete)) {
+      centersList = centersList.filter(c => String(c.id) !== String(id));
+      saveCentersToStorage();
+      renderTable();
+      updateStats();
+      updateAdminKPIStats();
+    }
+  }
+
+  function viewCenterReceipt(id) {
+    const center = centersList.find(c => String(c.id) === String(id));
+    if (center) showReceiptModal(center);
   }
 
   function handleStudentCountInput() {
@@ -979,7 +989,9 @@
 
     if (genderTypeHidden) genderTypeHidden.value = type;
     if (badgeLbl) badgeLbl.textContent = typeLabel;
-    if (badgeEl) badgeEl.className = `auto-type-badge ${badgeClass}`;
+    if (badgeEl) {
+      badgeEl.className = `auto-type-badge ${badgeClass}`;
+    }
 
     updateFormProgress();
   }
@@ -1028,8 +1040,222 @@
     if (txtEl) txtEl.textContent = `${percent}%`;
   }
 
+  // ====================================================
+  // 7. PRINT ENGINE & RECEIPT
+  // ====================================================
+  function showReceiptModal(centerData) {
+    const modal = document.getElementById('receipt-modal');
+    if (!modal) return;
+
+    const dict = I18N[currentLang];
+    const isAr = currentLang === 'ar';
+    const refCodeEl = document.getElementById('receipt-ref-code');
+    const bodyGrid = document.getElementById('receipt-body-grid');
+
+    if (refCodeEl) refCodeEl.textContent = centerData.ref_code || 'AECMEC-2026-0000';
+
+    if (bodyGrid) {
+      bodyGrid.innerHTML = `
+        <div class="receipt-item">
+          <label>${isAr ? 'اسم المركز القرآني' : 'Nom du centre'}</label>
+          <span>${centerData.name_ar} (${centerData.name_fr})</span>
+        </div>
+        <div class="receipt-item">
+          <label>${isAr ? 'المدير / المشرف' : 'Directeur / Responsable'}</label>
+          <span>${centerData.director_ar} (${centerData.director_fr})</span>
+        </div>
+        <div class="receipt-item">
+          <label>${isAr ? 'البلدية' : 'Commune'}</label>
+          <span>${centerData.commune}</span>
+        </div>
+        <div class="receipt-item">
+          <label>${isAr ? 'رقم الهاتف' : 'Téléphone'}</label>
+          <bdi class="phone-display" dir="ltr">${centerData.phone}</bdi>
+        </div>
+        <div class="receipt-item">
+          <label>${isAr ? 'عدد الطلاب والطالبات' : 'Nombre d\'élèves'}</label>
+          <span>${centerData.total} (👨 ${centerData.boys} | 👩 ${centerData.girls})</span>
+        </div>
+        <div class="receipt-item">
+          <label>${isAr ? 'عضوية الاتحاد' : 'Adhésion'}</label>
+          <span>${centerData.membership === 'Oui' ? (isAr ? 'نعم - منضم سابقاً' : 'Oui - Membre') : (isAr ? 'لا - غير منضم بعد' : 'Non - Pas encore membre')}</span>
+        </div>
+      `;
+    }
+
+    // Populate Print Receipt Template
+    const printRefEl = document.getElementById('receipt-print-ref-code');
+    const printDateEl = document.getElementById('receipt-print-date');
+    const printTbody = document.getElementById('receipt-print-table-body');
+
+    if (printRefEl) printRefEl.textContent = centerData.ref_code || 'AECMEC-2026-0000';
+    if (printDateEl) printDateEl.textContent = new Date().toLocaleDateString(isAr ? 'ar-MA' : 'fr-FR');
+
+    if (printTbody) {
+      printTbody.innerHTML = `
+        <tr>
+          <th style="width:35%; font-weight:bold; background:#f0f7f2;">${isAr ? 'اسم المركز القرآني' : 'Nom du centre'}:</th>
+          <td><strong>${centerData.name_ar}</strong> / <small>${centerData.name_fr}</small></td>
+        </tr>
+        <tr>
+          <th style="font-weight:bold; background:#f0f7f2;">${isAr ? 'المدير / المشرف' : 'Directeur'}:</th>
+          <td>${centerData.director_ar} / <small>${centerData.director_fr}</small></td>
+        </tr>
+        <tr>
+          <th style="font-weight:bold; background:#f0f7f2;">${isAr ? 'البلدية' : 'Commune'}:</th>
+          <td>${centerData.commune}</td>
+        </tr>
+        <tr>
+          <th style="font-weight:bold; background:#f0f7f2;">${isAr ? 'رقم الهاتف' : 'Téléphone'}:</th>
+          <td><bdi dir="ltr">${centerData.phone}</bdi></td>
+        </tr>
+        <tr>
+          <th style="font-weight:bold; background:#f0f7f2;">${isAr ? 'إجمالي الطلاب' : 'Total Élèves'}:</th>
+          <td><strong>${centerData.total}</strong> (بنين: ${centerData.boys} | بنات: ${centerData.girls})</td>
+        </tr>
+        <tr>
+          <th style="font-weight:bold; background:#f0f7f2;">${isAr ? 'عضوية الاتحاد' : 'Adhésion'}:</th>
+          <td>${centerData.membership === 'Oui' ? (isAr ? 'نعم - منضم سابقاً' : 'Oui - Membre') : (isAr ? 'لا - غير منضم بعد' : 'Non membre')}</td>
+        </tr>
+      `;
+    }
+
+    modal.classList.add('active');
+  }
+
+  function printRegistrationReceipt() {
+    document.body.classList.add('printing-receipt');
+    const cleanup = () => {
+      document.body.classList.remove('printing-receipt');
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    window.print();
+    setTimeout(cleanup, 3000);
+  }
+
+  function triggerPrintReport() {
+    const isAr = currentLang === 'ar';
+    const filtered = filterCentersList();
+
+    // Fill metadata
+    const printDateEl = document.getElementById('print-date');
+    if (printDateEl) printDateEl.textContent = new Date().toLocaleDateString(isAr ? 'ar-MA' : 'fr-FR');
+
+    const printCommuneNameEl = document.getElementById('print-commune-name');
+    if (printCommuneNameEl) {
+      if (activeFilterCommune === 'ALL') {
+        printCommuneNameEl.textContent = isAr ? 'جميع البلديات' : 'Toutes les communes';
+      } else {
+        const comObj = communesList.find(c => c.name_fr === activeFilterCommune);
+        printCommuneNameEl.textContent = comObj ? (isAr ? comObj.name_ar : comObj.name_fr) : activeFilterCommune;
+      }
+    }
+
+    // Fill summary stats box
+    const printStatsBox = document.getElementById('print-stats-box');
+    const totalStudents = filtered.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
+    const totalBoys = filtered.reduce((acc, c) => acc + (Number(c.boys) || 0), 0);
+    const totalGirls = filtered.reduce((acc, c) => acc + (Number(c.girls) || 0), 0);
+
+    if (printStatsBox) {
+      printStatsBox.innerHTML = `
+        <span><strong>${isAr ? 'إجمالي المراكز:' : 'Total Centres:'}</strong> ${filtered.length}</span>
+        <span><strong>${isAr ? 'مجموع الطلاب:' : 'Total Élèves:'}</strong> ${totalStudents}</span>
+        <span><strong>${isAr ? 'بنين:' : 'Garçons:'}</strong> ${totalBoys}</span>
+        <span><strong>${isAr ? 'بنات:' : 'Filles:'}</strong> ${totalGirls}</span>
+      `;
+    }
+
+    // Group filtered centers by commune
+    const grouped = {};
+    filtered.forEach(c => {
+      if (!grouped[c.commune]) grouped[c.commune] = [];
+      grouped[c.commune].push(c);
+    });
+
+    const tbody = document.getElementById('print-table-body');
+    if (tbody) {
+      let rowsHTML = '';
+      let rowNum = 1;
+
+      Object.keys(grouped).forEach(commName => {
+        const commCenters = grouped[commName];
+        const comObj = communesList.find(c => c.name_fr === commName);
+        const displayName = comObj ? (isAr ? comObj.name_ar : comObj.name_fr) : commName;
+        const commTotalStudents = commCenters.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
+        const commTotalBoys = commCenters.reduce((acc, c) => acc + (Number(c.boys) || 0), 0);
+        const commTotalGirls = commCenters.reduce((acc, c) => acc + (Number(c.girls) || 0), 0);
+
+        // Commune Header Row
+        rowsHTML += `
+          <tr style="background:#e0e0e0; font-weight:bold;">
+            <td colspan="9" style="text-align:${isAr ? 'right' : 'left'}; font-size:12px; padding:8px 12px; background:#d0d0d0;">
+              📍 <strong>${isAr ? 'البلدية:' : 'Commune:'} ${displayName}</strong> 
+              (${isAr ? 'عدد المراكز:' : 'Centres:'} ${commCenters.length} | ${isAr ? 'الطلاب:' : 'Élèves:'} ${commTotalStudents})
+            </td>
+          </tr>
+        `;
+
+        commCenters.forEach(c => {
+          rowsHTML += `
+            <tr>
+              <td>${rowNum++}</td>
+              <td style="text-align:${isAr ? 'right' : 'left'};"><strong>${c.name_ar}</strong><br><small>${c.name_fr}</small></td>
+              <td style="text-align:${isAr ? 'right' : 'left'};">${c.director_ar}<br><small>${c.director_fr}</small></td>
+              <td>${displayName}</td>
+              <td><dir dir="ltr">${c.phone}</dir></td>
+              <td>${c.boys}</td>
+              <td>${c.girls}</td>
+              <td><strong>${c.total}</strong></td>
+              <td>${c.membership === 'Oui' ? (isAr ? 'نعم' : 'Oui') : (isAr ? 'لا' : 'Non')}</td>
+            </tr>
+          `;
+        });
+
+        // Commune Subtotal Row
+        rowsHTML += `
+          <tr style="background:#f5f5f5; font-weight:bold;">
+            <td colspan="5" style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'مجموع بلدية' : 'Sous-total'} ${displayName}</td>
+            <td>${commTotalBoys}</td>
+            <td>${commTotalGirls}</td>
+            <td>${commTotalStudents}</td>
+            <td>-</td>
+          </tr>
+        `;
+      });
+
+      // Grand Total Row
+      rowsHTML += `
+        <tr style="background:#d1fae5; font-weight:bold; font-size:12px; border-top:2px solid #000;">
+          <td colspan="5" style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المجموع العام لكافة البلديات' : 'Total Général'}</td>
+          <td>${totalBoys}</td>
+          <td>${totalGirls}</td>
+          <td>${totalStudents}</td>
+          <td>-</td>
+        </tr>
+      `;
+
+      tbody.innerHTML = rowsHTML;
+    }
+
+    document.body.classList.remove('printing-receipt');
+    window.print();
+  }
+
+  // ====================================================
+  // 8. EXCEL & BACKUP
+  // ====================================================
   function exportFormattedExcel() {
-    const data = centersList.map((c, i) => ({
+    const isAr = currentLang === 'ar';
+    const filtered = filterCentersList();
+
+    if (filtered.length === 0) {
+      alert(isAr ? 'لا توجد بيانات لتصديرها.' : 'Aucune donnée à exporter.');
+      return;
+    }
+
+    const data = filtered.map((c, i) => ({
       '#': i + 1,
       'الرقم المرجعي': c.ref_code || '',
       'اسم المركز (عربي)': c.name_ar,
@@ -1051,7 +1277,7 @@
       XLSX.utils.book_append_sheet(wb, ws, "المراكز القرآنية");
       XLSX.writeFile(wb, `AECMEC_Mali_Quranic_Centers_${new Date().toISOString().slice(0,10)}.xlsx`);
     } else {
-      alert('مكتبة SheetJS غير محملة.');
+      alert('مكتبة SheetJS غير متوفرة.');
     }
   }
 
@@ -1067,7 +1293,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `AECMEC_Mali_Quranic_Centers_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `AECMEC_Mali_Backup_${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1096,7 +1322,7 @@
           updateStats();
           updateAdminKPIStats();
         } else {
-          alert('ملف النسخة الاحتياطية غير صالحة.');
+          alert('ملف النسخة الاحتياطية غير صالح.');
         }
       } catch (err) {
         alert('خطأ في قراءة ملف JSON.');
@@ -1105,57 +1331,119 @@
     reader.readAsText(file);
   }
 
-  function triggerPrintReport() {
-    window.print();
+  // ====================================================
+  // 9. NAVIGATION & MODALS
+  // ====================================================
+  function scrollToSection(sectionId) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+    const sidebar = document.getElementById('app-sidebar');
+    if (sidebar) sidebar.classList.remove('active');
   }
 
   function switchTab(tabId) {
+    if (tabId === 'tab-survey') {
+      scrollToSection('survey-section');
+    } else if (tabId === 'tab-schools-list') {
+      scrollToSection('list-section');
+    }
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    document.querySelectorAll('.tab-page').forEach(page => page.classList.remove('active'));
-
     const navItem = document.getElementById(`nav-${tabId.replace('tab-', '')}`);
-    const targetPage = document.getElementById(tabId);
-
     if (navItem) navItem.classList.add('active');
-    if (targetPage) targetPage.classList.add('active');
+  }
 
-    const sidebar = document.getElementById('app-sidebar');
-    if (sidebar) sidebar.classList.remove('mobile-active');
+  function scrollToFilters() {
+    const searchEl = document.getElementById('search-input');
+    if (searchEl) {
+      searchEl.scrollIntoView({ behavior: 'smooth' });
+      searchEl.focus();
+    }
   }
 
   function toggleMobileMenu() {
     const sidebar = document.getElementById('app-sidebar');
-    if (sidebar) sidebar.classList.toggle('mobile-active');
+    if (sidebar) sidebar.classList.toggle('active');
   }
 
   function openLoginModal() {
     const modal = document.getElementById('login-modal');
-    if (modal) modal.style.display = 'flex';
+    if (modal) modal.classList.add('active');
   }
 
   function closeLoginModal() {
     const modal = document.getElementById('login-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) modal.classList.remove('active');
   }
 
   function closeReceiptModalAndReset() {
     const modal = document.getElementById('receipt-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) modal.classList.remove('active');
     resetForm();
   }
 
-  function closeDetailsModal() {
-    const modal = document.getElementById('details-modal');
-    if (modal) modal.style.display = 'none';
+  function openCommuneModal() {
+    if (!isAdminLoggedIn) {
+      alert(I18N[currentLang].accessDenied);
+      openLoginModal();
+      return;
+    }
+    renderCommunesModalTable();
+    const modal = document.getElementById('commune-modal');
+    if (modal) modal.classList.add('active');
   }
 
-  function closePrintOptionsModal() {
-    const modal = document.getElementById('print-options-modal');
-    if (modal) modal.style.display = 'none';
+  function closeCommuneModal() {
+    const modal = document.getElementById('commune-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function renderCommunesModalTable() {
+    const tbody = document.getElementById('communes-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = communesList.map(c => `
+      <tr style="border-bottom: 1px solid #e0e0e0;">
+        <td style="padding: 8px;">${c.name_ar}</td>
+        <td style="padding: 8px;">${c.name_fr}</td>
+        <td style="padding: 8px; text-align: center;">
+          <button type="button" class="btn-sm btn-delete" onclick="deleteCommune('${c.id}')" title="حذف">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function handleCommuneSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const nameArInput = document.getElementById('commune-name-ar');
+    const nameFrInput = document.getElementById('commune-name-fr');
+    if (!nameArInput || !nameFrInput) return;
+
+    const nameAr = nameArInput.value.trim();
+    const nameFr = nameFrInput.value.trim();
+    if (!nameAr || !nameFr) return;
+
+    const newId = `c_${Date.now()}`;
+    communesList.push({ id: newId, name_ar: nameAr, name_fr: nameFr });
+    saveCommunesToStorage();
+
+    nameArInput.value = '';
+    nameFrInput.value = '';
+    renderCommuneOptions();
+    renderCommunesModalTable();
+  }
+
+  function deleteCommune(id) {
+    communesList = communesList.filter(c => c.id !== id);
+    saveCommunesToStorage();
+    renderCommuneOptions();
+    renderCommunesModalTable();
   }
 
   // ====================================================
-  // 7. INITIALIZATION & EVENT LISTENERS
+  // 10. INITIALIZATION
   // ====================================================
   function initApp() {
     loadStoredData();
@@ -1193,91 +1481,28 @@
       });
     }
 
-    const tableBody = document.getElementById('schools-table-body');
-    if (tableBody) {
-      tableBody.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const action = btn.getAttribute('data-action');
-        const id = btn.getAttribute('data-id');
-        if (!action || !id) return;
-
-        if (action === 'approve') {
-          const idx = centersList.findIndex(c => String(c.id) === String(id));
-          if (idx !== -1) {
-            centersList[idx].status = STATUS_APPROVED;
-            saveCentersToStorage();
-            renderTable();
-            updateStats();
-            updateAdminKPIStats();
-          }
-        } else if (action === 'reject') {
-          const idx = centersList.findIndex(c => String(c.id) === String(id));
-          if (idx !== -1) {
-            centersList[idx].status = STATUS_REJECTED;
-            saveCentersToStorage();
-            renderTable();
-            updateStats();
-            updateAdminKPIStats();
-          }
-        } else if (action === 'delete') {
-          if (confirm(I18N[currentLang].confirmDelete)) {
-            centersList = centersList.filter(c => String(c.id) !== String(id));
-            saveCentersToStorage();
-            renderTable();
-            updateStats();
-            updateAdminKPIStats();
-          }
-        } else if (action === 'edit') {
-          editCenterForm(id);
-        } else if (action === 'receipt') {
-          const center = centersList.find(c => String(c.id) === String(id));
-          if (center) showReceiptModal(center);
-        }
-      });
-    }
-
-    const form = document.getElementById('quran-center-form');
-    if (form) form.addEventListener('submit', handleFormSubmit);
-
-    const loginForm = document.getElementById('admin-login-form') || document.querySelector('#login-modal form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const passInput = document.getElementById('login-password') || document.getElementById('admin-password');
-        if (!passInput) return;
-        const res = await handleAdminLogin(passInput.value);
-        if (res.success) {
-          closeLoginModal();
-        } else {
-          alert(res.message);
-        }
-      });
-    }
-
     setupPhoneFormattingAndProgress();
   }
 
-  // Safe execution: run immediately if DOM is ready, or on DOMContentLoaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
   } else {
     initApp();
   }
 
-  // Global Document Event Delegation for Filter Pills
+  // Global Click Event Delegation for Quick Filter Pills
   document.addEventListener('click', (e) => {
     const pill = e.target.closest('.filter-pill, .pill-btn');
     if (pill) {
-      const type = pill.getAttribute('data-filter') || pill.getAttribute('data-type');
-      if (type) {
+      const filterType = pill.getAttribute('data-filter') || pill.getAttribute('data-type');
+      if (filterType) {
         document.querySelectorAll('.quick-filter-pills .pill-btn, .filter-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
-        if (['ALL', STATUS_APPROVED, STATUS_PENDING, STATUS_REJECTED].includes(type)) {
-          activeFilterStatus = type;
+        if (['ALL', STATUS_APPROVED, STATUS_PENDING, STATUS_REJECTED].includes(filterType)) {
+          activeFilterStatus = filterType;
           activePillFilter = 'ALL';
         } else {
-          activePillFilter = type;
+          activePillFilter = filterType;
         }
         renderTable();
       }
@@ -1285,7 +1510,7 @@
   });
 
   // ====================================================
-  // 8. GLOBAL WINDOW EXPOSURES (100% Onclick Compatibility)
+  // 11. GLOBAL WINDOW EXPOSURES
   // ====================================================
   window.toggleLanguage = () => {
     currentLang = currentLang === 'ar' ? 'fr' : 'ar';
@@ -1293,20 +1518,31 @@
   };
   window.toggleMobileMenu = toggleMobileMenu;
   window.switchTab = switchTab;
+  window.scrollToSection = scrollToSection;
+  window.scrollToFilters = scrollToFilters;
   window.openLoginModal = openLoginModal;
   window.closeLoginModal = closeLoginModal;
   window.handleAdminLogout = handleAdminLogout;
+  window.handleFormSubmit = handleFormSubmit;
   window.resetForm = resetForm;
+  window.editCenterForm = editCenterForm;
+  window.handleApproveCenter = handleApproveCenter;
+  window.handleRejectCenter = handleRejectCenter;
+  window.handleDeleteCenter = handleDeleteCenter;
+  window.viewCenterReceipt = viewCenterReceipt;
   window.handleStudentCountInput = handleStudentCountInput;
   window.handlePhoneInput = handlePhoneInput;
   window.exportFormattedExcel = exportFormattedExcel;
   window.triggerPrintReport = triggerPrintReport;
+  window.printRegistrationReceipt = printRegistrationReceipt;
   window.downloadBackupJSON = downloadBackupJSON;
   window.triggerRestoreJSON = triggerRestoreJSON;
   window.restoreBackupJSON = restoreBackupJSON;
   window.closeReceiptModalAndReset = closeReceiptModalAndReset;
-  window.closeDetailsModal = closeDetailsModal;
-  window.closePrintOptionsModal = closePrintOptionsModal;
+  window.openCommuneModal = openCommuneModal;
+  window.closeCommuneModal = closeCommuneModal;
+  window.handleCommuneSubmit = handleCommuneSubmit;
+  window.deleteCommune = deleteCommune;
   window.filterTable = () => renderTable();
 
   window.setQuickFilterType = (type, el) => {

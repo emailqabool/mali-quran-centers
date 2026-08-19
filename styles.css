@@ -1687,11 +1687,54 @@ html[dir="ltr"] .modal-close {
   background: #0369a1;
 }
 
+/* ----------------------------------------------------
+   Admin Mode Conditional Visibility (Strict Role Isolation)
+   ---------------------------------------------------- */
+.admin-kpi-bar {
+  display: none !important;
+}
+
+body.admin-mode .admin-kpi-bar {
+  display: grid !important;
+}
+
+#nav-manage-communes {
+  display: none !important;
+}
+
+body.admin-mode #nav-manage-communes {
+  display: flex !important;
+}
+
 .admin-only-inline {
   display: none !important;
 }
 
 body.admin-mode .admin-only-inline {
+  display: inline-flex !important;
+}
+
+.admin-only-block {
+  display: none !important;
+}
+
+body.admin-mode .admin-only-block {
+  display: block !important;
+}
+
+#filter-status-group {
+  display: none !important;
+}
+
+body.admin-mode #filter-status-group {
+  display: flex !important;
+}
+
+.pill-admin-only {
+  display: none !important;
+}
+
+body.admin-mode .pill-admin-only {
   display: inline-flex !important;
 }
 
