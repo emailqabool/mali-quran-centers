@@ -44,17 +44,11 @@
           </div>
         </div>
 
-        <!-- Controls (Language Switcher & Admin Auth) -->
+        <!-- Controls (Language Switcher) -->
         <div class="header-controls">
           <button class="lang-toggle-btn" id="btn-lang-toggle" onclick="toggleLanguage()" title="تغيير اللغة / Changer la langue">
             <span id="txt-target-lang">🇫🇷 Français</span>
           </button>
-          
-          <div class="admin-auth-badge" id="auth-status-container">
-            <button class="auth-btn" id="btn-login-trigger" onclick="openLoginModal()">
-              <i class="fa-solid fa-lock"></i> <span id="txt-login-btn">دخول المسؤول</span>
-            </button>
-          </div>
         </div>
 
       </div>
@@ -317,6 +311,14 @@
                 <span class="kpi-lbl" id="lbl-kpi-union-ratio">نسبة الأعضاء بالاتحاد</span>
               </div>
             </div>
+
+            <div class="kpi-card kpi-pending-card">
+              <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div class="kpi-info">
+                <span class="kpi-val" style="color:#d97706;" id="kpi-pending-moderation">0</span>
+                <span class="kpi-lbl" id="kpiPendingModeration">طلبات قيد المراجعة والتدقيق</span>
+              </div>
+            </div>
           </div>
 
           <div class="card-header border-bottom">
@@ -330,35 +332,48 @@
 
           <!-- Quick Filter Pills Bar -->
           <div class="quick-filter-pills">
-            <button class="pill-btn active" data-type="ALL" onclick="setQuickFilterType('ALL', this)"><i class="fa-solid fa-layer-group"></i> <span id="lbl-pill-all">جميع المراكز</span></button>
-            <button class="pill-btn" data-type="garcons" onclick="setQuickFilterType('garcons', this)"><i class="fa-solid fa-child"></i> <span id="lbl-pill-boys">بنين فقط</span></button>
-            <button class="pill-btn" data-type="filles" onclick="setQuickFilterType('filles', this)"><i class="fa-solid fa-child-dress"></i> <span id="lbl-pill-girls">بنات فقط</span></button>
-            <button class="pill-btn" data-type="mixte" onclick="setQuickFilterType('mixte', this)"><i class="fa-solid fa-people-hold"></i> <span id="lbl-pill-mixte">مشتركة</span></button>
-            <button class="pill-btn" data-type="union" onclick="setQuickFilterType('union', this)"><i class="fa-solid fa-circle-check"></i> <span id="lbl-pill-union">أعضاء الاتحاد</span></button>
+            <button class="pill-btn filter-pill active" data-filter="ALL"><i class="fa-solid fa-layer-group"></i> <span id="lbl-pill-all">جميع المراكز</span></button>
+            <button class="pill-btn filter-pill" data-filter="approved"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> <span id="lbl-pill-approved">المعتمدة فقط 🟢</span></button>
+            <button class="pill-btn filter-pill" data-filter="pending"><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> <span id="lbl-pill-pending">قيد المراجعة 🟡 <span id="pending-moderation-badge" class="kpi-pending-badge" style="display:none;">0</span></span></button>
+            <button class="pill-btn filter-pill" data-filter="rejected"><i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> <span id="lbl-pill-rejected">المرفوضة 🔴</span></button>
+            <button class="pill-btn filter-pill" data-filter="garcons"><i class="fa-solid fa-child"></i> <span id="lbl-pill-boys">بنين فقط</span></button>
+            <button class="pill-btn filter-pill" data-filter="filles"><i class="fa-solid fa-child-dress"></i> <span id="lbl-pill-girls">بنات فقط</span></button>
+            <button class="pill-btn filter-pill" data-filter="mixte"><i class="fa-solid fa-people-hold"></i> <span id="lbl-pill-mixte">مشتركة</span></button>
+            <button class="pill-btn filter-pill" data-filter="union"><i class="fa-solid fa-certificate"></i> <span id="lbl-pill-union">أعضاء الاتحاد</span></button>
           </div>
 
           <!-- Controls Bar (Filter, Search, Export Excel, Print) -->
           <div class="table-controls-bar">
             <div class="control-group search-box">
               <div class="input-icon-wrapper">
-                <input type="text" id="search-input" placeholder="بحث..." oninput="filterTable()">
+                <input type="text" id="search-input" placeholder="بحث...">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
               </div>
             </div>
 
             <div class="control-group filter-select">
               <label for="filter-commune" id="lbl-filter-commune">البلدية:</label>
-              <select id="filter-commune" onchange="filterTable()">
+              <select id="filter-commune">
                 <option value="ALL" id="opt-filt-commune-all">الكل</option>
               </select>
             </div>
 
             <div class="control-group filter-select">
               <label for="filter-membership" id="lbl-filter-membership">العضوية:</label>
-              <select id="filter-membership" onchange="filterTable()">
+              <select id="filter-membership">
                 <option value="ALL" id="opt-filt-mem-all">الكل</option>
                 <option value="Oui" id="opt-filt-mem-yes">نعم</option>
                 <option value="Non" id="opt-filt-mem-no">لا</option>
+              </select>
+            </div>
+
+            <div class="control-group filter-select">
+              <label for="filter-status" id="lbl-filter-status">حالة التدقيق:</label>
+              <select id="filter-status">
+                <option value="ALL" id="opt-filt-status-all">الكل</option>
+                <option value="approved" id="opt-filt-status-approved">المعتمدة 🟢</option>
+                <option value="pending" id="opt-filt-status-pending">قيد المراجعة 🟡</option>
+                <option value="rejected" id="opt-filt-status-rejected">المرفوضة 🔴</option>
               </select>
             </div>
 
@@ -384,14 +399,14 @@
             <table class="data-table" id="schools-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th id="th-center-name">اسم المركز القرآني</th>
-                  <th id="th-director-name">المدير / المشرف</th>
-                  <th id="th-commune">البلدية</th>
-                  <th id="th-phone">الهاتف</th>
-                  <th id="th-students-count">عدد الطلاب</th>
-                  <th id="th-union-membership">عضوية الاتحاد</th>
-                  <th class="text-center" id="th-actions">الإجراءات</th>
+                  <th id="thStatus">حالة التوثيق</th>
+                  <th id="thCenterName">اسم المركز القرآني</th>
+                  <th id="thDirectorName">المدير / المشرف</th>
+                  <th id="thCommune">البلدية</th>
+                  <th id="thPhone">الهاتف</th>
+                  <th id="thStudentsCount">عدد الطلاب</th>
+                  <th id="thUnionMembership">عضوية الاتحاد</th>
+                  <th class="text-center" id="thActions">الإجراءات</th>
                 </tr>
               </thead>
               <tbody id="schools-table-body">
@@ -442,9 +457,11 @@
           <a href="https://wa.me/22376000000" target="_blank" class="footer-whatsapp-btn" title="تواصل للمساعدة عبر الواتساب">
             <i class="fa-brands fa-whatsapp"></i> <span id="lbl-whatsapp-support">الدعم الفني عبر الواتساب</span>
           </a>
-          <button type="button" class="footer-auth-link" onclick="openLoginModal()" id="footer-auth-trigger">
-            <i class="fa-solid fa-lock"></i> <span id="lbl-footer-auth-btn">دخول المسؤول</span>
-          </button>
+          <div id="auth-status-container">
+            <button type="button" class="footer-auth-link" onclick="openLoginModal()" id="footer-auth-trigger">
+              <i class="fa-solid fa-lock"></i> <span id="txt-login-btn">دخول المسؤول</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>
@@ -773,7 +790,7 @@
     </div>
   </div>
 
-  <!-- JavaScript File -->
-  <script src="app.js"></script>
+  <!-- JavaScript Modules -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

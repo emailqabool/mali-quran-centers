@@ -1694,3 +1694,126 @@ html[dir="ltr"] .modal-close {
 body.admin-mode .admin-only-inline {
   display: inline-flex !important;
 }
+
+/* ----------------------------------------------------
+   Moderation Status Badges & Admin Action Controls
+   ---------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.badge-success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.badge-primary {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-outline {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-approve {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.btn-approve:hover {
+  background: #059669;
+}
+
+.btn-reject {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.btn-reject:hover {
+  background: #dc2626;
+}
+
+.btn-edit {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.btn-edit:hover {
+  background: #d97706;
+}
+
+.btn-delete {
+  background: #6b7280;
+  color: #ffffff;
+}
+
+.btn-delete:hover {
+  background: #4b5563;
+}
+
+.btn-view-receipt {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-view-receipt:hover {
+  background: var(--primary-dark);
+}
+
+.kpi-pending-card {
+  border-top: 4px solid #f59e0b !important;
+}
+
+.kpi-pending-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-right: 6px;
+}
+
