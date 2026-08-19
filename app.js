@@ -1,6 +1,6 @@
 /* ----------------------------------------------------
    Quranic Centers Survey & Management System - Mali
-   Standalone Production Bundle (100% Cross-Browser & File:// Compatible)
+   Standalone Production Bundle (Bulletproof Initializer & Delegation)
    ---------------------------------------------------- */
 
 (function () {
@@ -363,7 +363,7 @@
   };
 
   // ====================================================
-  // 3. STATE & DATA MANAGEMENT
+  // 3. STATE MANAGEMENT
   // ====================================================
   let currentLang = 'ar';
   let centersList = [];
@@ -1157,7 +1157,7 @@
   // ====================================================
   // 7. INITIALIZATION & EVENT LISTENERS
   // ====================================================
-  document.addEventListener('DOMContentLoaded', () => {
+  function initApp() {
     loadStoredData();
     applyLanguageUI();
 
@@ -1256,6 +1256,32 @@
     }
 
     setupPhoneFormattingAndProgress();
+  }
+
+  // Safe execution: run immediately if DOM is ready, or on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+
+  // Global Document Event Delegation for Filter Pills
+  document.addEventListener('click', (e) => {
+    const pill = e.target.closest('.filter-pill, .pill-btn');
+    if (pill) {
+      const type = pill.getAttribute('data-filter') || pill.getAttribute('data-type');
+      if (type) {
+        document.querySelectorAll('.quick-filter-pills .pill-btn, .filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        if (['ALL', STATUS_APPROVED, STATUS_PENDING, STATUS_REJECTED].includes(type)) {
+          activeFilterStatus = type;
+          activePillFilter = 'ALL';
+        } else {
+          activePillFilter = type;
+        }
+        renderTable();
+      }
+    }
   });
 
   // ====================================================
