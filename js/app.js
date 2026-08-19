@@ -1425,8 +1425,11 @@
       <tr style="border-bottom: 1px solid #e0e0e0;">
         <td style="padding: 8px;">${c.name_ar}</td>
         <td style="padding: 8px;">${c.name_fr}</td>
-        <td style="padding: 8px; text-align: center;">
-          <button type="button" class="btn-sm btn-delete" onclick="deleteCommune('${c.id}')" title="حذف">
+        <td style="padding: 8px; text-align: center; white-space: nowrap;">
+          <button type="button" class="btn-sm btn-edit" onclick="editCommune('${c.id}')" title="تعديل البلدية" style="margin-inline-end: 4px;">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button type="button" class="btn-sm btn-delete" onclick="deleteCommune('${c.id}')" title="حذف البلدية">
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>
@@ -1434,31 +1437,90 @@
     `).join('');
   }
 
+  function editCommune(id) {
+    const commune = communesList.find(c => String(c.id) === String(id));
+    if (!commune) return;
+
+    const editIdInput = document.getElementById('commune-edit-id');
+    const nameArInput = document.getElementById('commune-name-ar');
+    const nameFrInput = document.getElementById('commune-name-fr');
+    const btnTxt = document.getElementById('commune-form-btn-txt');
+
+    if (editIdInput) editIdInput.value = commune.id;
+    if (nameArInput) nameArInput.value = commune.name_ar;
+    if (nameFrInput) nameFrInput.value = commune.name_fr;
+    if (btnTxt) btnTxt.textContent = currentLang === 'ar' ? 'حفظ التعديل' : 'Mettre à jour';
+
+    if (nameArInput) nameArInput.focus();
+  }
+
+  function resetCommuneForm() {
+    const form = document.getElementById('commune-form');
+    if (form) form.reset();
+    const editIdInput = document.getElementById('commune-edit-id');
+    if (editIdInput) editIdInput.value = '';
+    const btnTxt = document.getElementById('commune-form-btn-txt');
+    if (btnTxt) btnTxt.textContent = currentLang === 'ar' ? 'إضافة' : 'Ajouter';
+  }
+
   function handleCommuneSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
+    const editIdInput = document.getElementById('commune-edit-id');
+    const editId = editIdInput ? editIdInput.value : '';
+
     const nameArInput = document.getElementById('commune-name-ar');
     const nameFrInput = document.getElementById('commune-name-fr');
     if (!nameArInput || !nameFrInput) return;
 
-    const nameAr = nameArInput.value.trim();
-    const nameFr = nameFrInput.value.trim();
+    const nameAr = xssClean(nameArInput.value.trim());
+    const nameFr = xssClean(nameFrInput.value.trim());
     if (!nameAr || !nameFr) return;
 
-    const newId = `c_${Date.now()}`;
-    communesList.push({ id: newId, name_ar: nameAr, name_fr: nameFr });
-    saveCommunesToStorage();
+    if (editId) {
+      const idx = communesList.findIndex(c => String(c.id) === String(editId));
+      if (idx !== -1) {
+        const oldFrName = communesList[idx].name_fr;
+        communesList[idx] = {
+          ...communesList[idx],
+          name_ar: nameAr,
+          name_fr: nameFr
+        };
 
-    nameArInput.value = '';
-    nameFrInput.value = '';
+        // Update centers linked to this commune if FR name changed
+        if (oldFrName !== nameFr) {
+          centersList.forEach(center => {
+            if (center.commune === oldFrName) {
+              center.commune = nameFr;
+            }
+          });
+          saveCentersToStorage();
+        }
+      }
+    } else {
+      const newId = `c_${Date.now()}`;
+      communesList.push({ id: newId, name_ar: nameAr, name_fr: nameFr });
+    }
+
+    saveCommunesToStorage();
+    resetCommuneForm();
     renderCommuneOptions();
     renderCommunesModalTable();
+    renderTable();
+    updateAdminKPIStats();
   }
 
   function deleteCommune(id) {
-    communesList = communesList.filter(c => c.id !== id);
-    saveCommunesToStorage();
-    renderCommuneOptions();
-    renderCommunesModalTable();
+    const commune = communesList.find(c => String(c.id) === String(id));
+    const name = commune ? (currentLang === 'ar' ? commune.name_ar : commune.name_fr) : '';
+    if (confirm(currentLang === 'ar' ? `هل أنت متأكد من حذف بلدية (${name})؟` : `Êtes-vous sûr de supprimer la commune (${name}) ?`)) {
+      communesList = communesList.filter(c => String(c.id) !== String(id));
+      saveCommunesToStorage();
+      resetCommuneForm();
+      renderCommuneOptions();
+      renderCommunesModalTable();
+      renderTable();
+      updateAdminKPIStats();
+    }
   }
 
   function setupPhoneFormattingAndProgress() {
@@ -1581,6 +1643,8 @@
   window.openCommuneModal = openCommuneModal;
   window.closeCommuneModal = closeCommuneModal;
   window.handleCommuneSubmit = handleCommuneSubmit;
+  window.editCommune = editCommune;
+  window.resetCommuneForm = resetCommuneForm;
   window.deleteCommune = deleteCommune;
   window.filterTable = () => renderTable();
 
