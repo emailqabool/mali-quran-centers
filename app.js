@@ -1421,15 +1421,16 @@
   function renderCommunesModalTable() {
     const tbody = document.getElementById('communes-table-body');
     if (!tbody) return;
+    const isAr = currentLang === 'ar';
     tbody.innerHTML = communesList.map(c => `
       <tr style="border-bottom: 1px solid #e0e0e0;">
-        <td style="padding: 8px;">${c.name_ar}</td>
-        <td style="padding: 8px;">${c.name_fr}</td>
-        <td style="padding: 8px; text-align: center; white-space: nowrap;">
-          <button type="button" class="btn-sm btn-edit" onclick="editCommune('${c.id}')" title="تعديل البلدية" style="margin-inline-end: 4px;">
-            <i class="fa-solid fa-pen-to-square"></i>
+        <td style="padding: 10px 8px;"><strong>${c.name_ar}</strong></td>
+        <td style="padding: 10px 8px;">${c.name_fr}</td>
+        <td style="padding: 10px 8px; text-align: center; white-space: nowrap;">
+          <button type="button" class="btn-sm btn-edit" onclick="editCommune('${c.id}')" title="تعديل البلدية" style="margin-inline-end: 6px; cursor: pointer;">
+            <i class="fa-solid fa-pen-to-square"></i> <span>${isAr ? 'تعديل' : 'Modifier'}</span>
           </button>
-          <button type="button" class="btn-sm btn-delete" onclick="deleteCommune('${c.id}')" title="حذف البلدية">
+          <button type="button" class="btn-sm btn-delete" onclick="deleteCommune('${c.id}')" title="حذف البلدية" style="cursor: pointer;">
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>

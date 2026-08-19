@@ -1765,6 +1765,64 @@ body.admin-mode .pill-admin-only {
 /* ----------------------------------------------------
    Moderation Status Badges & Admin Action Controls
    ---------------------------------------------------- */
+.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sm.btn-edit {
+  background: #e0f2fe;
+  color: #0284c7;
+  border-color: #bae6fd;
+}
+
+.btn-sm.btn-edit:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.btn-sm.btn-delete {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-sm.btn-delete:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.btn-sm.btn-approve {
+  background: #d1fae5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+.btn-sm.btn-approve:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+.btn-sm.btn-reject {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-sm.btn-reject:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
