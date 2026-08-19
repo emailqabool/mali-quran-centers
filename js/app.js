@@ -1,18 +1,16 @@
 /* ----------------------------------------------------
    Quranic Centers Survey & Management System - Mali
-   Main Application Bootstrapper & Controller (ES Module)
+   Main Application Bootstrapper & Global Window Bridge
    ---------------------------------------------------- */
 
-import { loadStoredData, saveCentersToStorage, getCentersList, setCentersList, getCommunesList, syncFromGoogleSheets, saveCenterToGoogleSheets } from './storage.js';
+import { loadStoredData, saveCentersToStorage, getCentersList, setCentersList, getCommunesList, syncFromGoogleSheets, saveCenterToGoogleSheets, downloadBackupJSON as downloadBackupJSONFile, restoreBackupJSONData } from './storage.js';
 import { getCurrentLang, setCurrentLang, applyLanguageUI, renderCommuneOptions, renderTable, updateStats, updateAdminKPIStats, setFilters, getFilters, showReceiptModal } from './ui.js';
 import { checkInitialAdminAuth, handleAdminLogin, handleAdminLogout, handleApproveCenter, handleRejectCenter, handleDeleteCenter, handleAddCommune, handleDeleteCommune, renderCommunesAdminTable, getIsAdminLoggedIn } from './admin.js';
 import { checkRateLimit, xssClean } from './security.js';
 import { STATUS_PENDING, STATUS_APPROVED } from './moderation.js';
 import { I18N } from './i18n.js';
 
-let activeQuickFilter = 'ALL';
-
-// Application Startup
+// Global application bootstrap
 document.addEventListener('DOMContentLoaded', () => {
   loadStoredData();
   checkInitialAdminAuth();
@@ -27,42 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Event Listeners Registration
+ * Event Listeners & UI Binding Setup
  */
 function setupEventListeners() {
-  // Language Switcher
+  // Language Toggle Button
   const btnLangToggle = document.getElementById('btn-lang-toggle');
   if (btnLangToggle) {
-    btnLangToggle.addEventListener('click', () => {
-      const newLang = getCurrentLang() === 'ar' ? 'fr' : 'ar';
-      setCurrentLang(newLang);
-      applyLanguageUI();
-      renderTable(getIsAdminLoggedIn());
-    });
+    btnLangToggle.addEventListener('click', toggleLanguage);
   }
 
-  // Mobile Menu Drawer Toggle
-  const btnMobileMenu = document.querySelector('.mobile-menu-toggle');
-  const btnCloseMobile = document.querySelector('.close-mobile-menu');
-  if (btnMobileMenu) btnMobileMenu.addEventListener('click', toggleMobileMenu);
-  if (btnCloseMobile) btnCloseMobile.addEventListener('click', toggleMobileMenu);
-
-  // Tab Navigation Links
-  const navSurvey = document.getElementById('nav-survey');
-  const navSchools = document.getElementById('nav-schools-list');
-  const navSearch = document.getElementById('nav-search');
-  const navCommunes = document.getElementById('nav-communes');
-  const navExcel = document.getElementById('nav-excel');
-  const navPrint = document.getElementById('nav-print');
-
-  if (navSurvey) navSurvey.onclick = () => switchTab('tab-survey');
-  if (navSchools) navSchools.onclick = () => switchTab('tab-schools-list');
-  if (navSearch) navSearch.onclick = () => switchTab('tab-search');
-  if (navCommunes) navCommunes.onclick = () => switchTab('tab-communes');
-  if (navExcel) navExcel.onclick = () => switchTab('tab-excel');
-  if (navPrint) navPrint.onclick = () => switchTab('tab-print');
-
-  // Search Input & Filters
+  // Search & Filters Inputs
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -95,16 +67,16 @@ function setupEventListeners() {
     });
   }
 
-  // Quick Filter Pills (All / Approved / Pending / Rejected / Boys / Girls / Mixte / Union)
-  const filterPills = document.querySelectorAll('.filter-pill');
+  // Quick Filter Pills
+  const filterPills = document.querySelectorAll('.filter-pill, .pill-btn');
   filterPills.forEach(pill => {
     pill.addEventListener('click', () => {
       filterPills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      const val = pill.getAttribute('data-filter');
+      const val = pill.getAttribute('data-filter') || pill.getAttribute('data-type');
       
       if (['ALL', STATUS_APPROVED, STATUS_PENDING, 'rejected'].includes(val)) {
-        setFilters({ status: val });
+        setFilters({ status: val, pill: 'ALL' });
       } else {
         setFilters({ pill: val });
       }
@@ -112,7 +84,7 @@ function setupEventListeners() {
     });
   });
 
-  // Table Action Buttons (Approve, Reject, Edit, Delete, Receipt)
+  // Action Delegation for Data Table Buttons
   const tableBody = document.getElementById('schools-table-body');
   if (tableBody) {
     tableBody.addEventListener('click', (e) => {
@@ -138,87 +110,21 @@ function setupEventListeners() {
     });
   }
 
-  // Form Submit Handler
+  // Center Survey Form Submit
   const form = document.getElementById('quran-center-form');
   if (form) {
     form.addEventListener('submit', handleFormSubmit);
   }
 
-  const btnReset = document.getElementById('btn-form-reset');
-  if (btnReset) btnReset.addEventListener('click', resetForm);
-
-  // Admin Login Form
-  const loginForm = document.getElementById('admin-login-form');
+  // Admin Login Modal Form
+  const loginForm = document.getElementById('admin-login-form') || document.querySelector('#login-modal form');
   if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const passInput = document.getElementById('admin-password');
-      const errEl = document.getElementById('login-error-msg');
-      if (!passInput) return;
-      
-      const res = await handleAdminLogin(passInput.value);
-      if (res.success) {
-        passInput.value = '';
-        if (errEl) errEl.style.display = 'none';
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'none';
-      } else {
-        if (errEl) {
-          errEl.textContent = res.message;
-          errEl.style.display = 'block';
-        }
-      }
-    });
+    loginForm.addEventListener('submit', handleLoginSubmit);
   }
-
-  // Admin Add Commune Form
-  const addCommuneForm = document.getElementById('add-commune-form');
-  if (addCommuneForm) {
-    addCommuneForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nameAr = document.getElementById('commune-name-ar').value;
-      const nameFr = document.getElementById('commune-name-fr').value;
-      if (handleAddCommune(nameAr, nameFr)) {
-        document.getElementById('commune-name-ar').value = '';
-        document.getElementById('commune-name-fr').value = '';
-        renderCommunesAdminTable();
-      }
-    });
-  }
-
-  // Commune Table Admin Delete
-  const communeTableBody = document.getElementById('communes-table-body');
-  if (communeTableBody) {
-    communeTableBody.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      const id = btn.getAttribute('data-commune-id');
-      if (id) handleDeleteCommune(id);
-    });
-  }
-
-  // Modal Close Buttons
-  document.querySelectorAll('.close-modal-btn, .close-receipt-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-    });
-  });
-
-  // Print Buttons
-  const btnPrintReceipt = document.getElementById('btn-print-receipt');
-  if (btnPrintReceipt) {
-    btnPrintReceipt.addEventListener('click', () => window.print());
-  }
-
-  const btnExportExcel = document.getElementById('btn-export-excel');
-  if (btnExportExcel) btnExportExcel.addEventListener('click', exportToExcel);
-
-  const btnPrintReport = document.getElementById('btn-print-report');
-  if (btnPrintReport) btnPrintReport.addEventListener('click', printReport);
 }
 
 /**
- * Tab Navigation Router
+ * Navigation & Tab Switchers
  */
 export function switchTab(tabId) {
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -234,7 +140,6 @@ export function switchTab(tabId) {
     renderCommunesAdminTable();
   }
 
-  // Mobile menu close on select
   const sidebar = document.getElementById('app-sidebar');
   if (sidebar) sidebar.classList.remove('mobile-active');
 }
@@ -244,13 +149,97 @@ export function toggleMobileMenu() {
   if (sidebar) sidebar.classList.toggle('mobile-active');
 }
 
+export function toggleLanguage() {
+  const newLang = getCurrentLang() === 'ar' ? 'fr' : 'ar';
+  setCurrentLang(newLang);
+  applyLanguageUI();
+  renderTable(getIsAdminLoggedIn());
+}
+
 /**
- * Survey Form Submission Handler (Sanitization, Rate Limit, Moderation Status)
+ * Admin Login Handler with Immediate UI Update & Logout Button Display
+ */
+export async function handleLoginSubmit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const passInput = document.getElementById('login-password') || document.getElementById('admin-password');
+  const errEl = document.getElementById('login-error-msg');
+  if (!passInput) return;
+
+  const res = await handleAdminLogin(passInput.value);
+  if (res.success) {
+    passInput.value = '';
+    if (errEl) errEl.style.display = 'none';
+    closeLoginModal();
+    // Immediate UI update to show logout button and admin mode
+    renderTable(true);
+    updateStats();
+    updateAdminKPIStats();
+  } else {
+    if (errEl) {
+      errEl.textContent = res.message;
+      errEl.style.display = 'block';
+    } else {
+      alert(res.message);
+    }
+  }
+}
+
+export function openLoginModal() {
+  const modal = document.getElementById('login-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+export function closeLoginModal() {
+  const modal = document.getElementById('login-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+/**
+ * Student Count Dynamic Calculations
+ */
+export function handleStudentCountInput() {
+  const boysInput = document.getElementById('boys_count');
+  const girlsInput = document.getElementById('girls_count');
+  const totalInput = document.getElementById('total_students');
+  const badgeEl = document.getElementById('auto-type-badge');
+  const badgeLbl = document.getElementById('auto-type-lbl');
+  const genderTypeHidden = document.getElementById('student_gender_type');
+
+  const boys = parseInt(boysInput ? boysInput.value : 0) || 0;
+  const girls = parseInt(girlsInput ? girlsInput.value : 0) || 0;
+  const total = boys + girls;
+
+  if (totalInput) totalInput.value = total;
+
+  let type = 'mixte';
+  let typeLabel = getCurrentLang() === 'ar' ? 'بنين وبنات' : 'Mixte';
+  let badgeClass = 'badge-mixte';
+
+  if (boys > 0 && girls === 0) {
+    type = 'garcons';
+    typeLabel = getCurrentLang() === 'ar' ? 'بنين فقط' : 'Garçons uniquement';
+    badgeClass = 'badge-garcons';
+  } else if (girls > 0 && boys === 0) {
+    type = 'filles';
+    typeLabel = getCurrentLang() === 'ar' ? 'بنات فقط' : 'Filles uniquement';
+    badgeClass = 'badge-filles';
+  }
+
+  if (genderTypeHidden) genderTypeHidden.value = type;
+  if (badgeLbl) badgeLbl.textContent = typeLabel;
+  if (badgeEl) {
+    badgeEl.className = `auto-type-badge ${badgeClass}`;
+  }
+
+  updateFormProgress();
+}
+
+/**
+ * Survey Form Submission Handler
  */
 function handleFormSubmit(e) {
   e.preventDefault();
 
-  // Rate Limiting check (1 submission per 5 seconds)
   const rate = checkRateLimit('survey_submit', 5);
   if (!rate.allowed) {
     alert(getCurrentLang() === 'ar' 
@@ -281,7 +270,6 @@ function handleFormSubmit(e) {
   let targetCenter = null;
 
   if (editId) {
-    // Edit Mode (Preserves status)
     const idx = centers.findIndex(c => String(c.id) === String(editId));
     if (idx !== -1) {
       centers[idx] = {
@@ -304,7 +292,6 @@ function handleFormSubmit(e) {
       targetCenter = centers[idx];
     }
   } else {
-    // New Registration (Assigned pending moderation status unless admin creates it)
     const newId = Date.now();
     const refCode = `REC-2026-${String(centers.length + 1).padStart(4, '0')}`;
     targetCenter = {
@@ -340,11 +327,13 @@ function handleFormSubmit(e) {
   showReceiptModal(targetCenter);
 }
 
-function resetForm() {
+export function resetForm() {
   const form = document.getElementById('quran-center-form');
   if (form) form.reset();
-  document.getElementById('center_edit_id').value = '';
+  const editIdInput = document.getElementById('center_edit_id');
+  if (editIdInput) editIdInput.value = '';
   localStorage.removeItem('mali_quran_form_draft');
+  handleStudentCountInput();
   updateFormProgress();
 }
 
@@ -368,26 +357,31 @@ function editCenterForm(id) {
   document.getElementById('girls_count').value = center.girls;
   document.getElementById('union_membership').value = center.membership;
 
+  handleStudentCountInput();
   updateFormProgress();
 }
 
 /**
- * Phone Auto-formatting and Form Progress
+ * Phone Input Formatting & Form Progress Calculation
  */
+export function handlePhoneInput(input) {
+  const target = input || document.getElementById('phone');
+  if (!target) return;
+  let raw = target.value.replace(/\D/g, '');
+  if (raw.length > 8) raw = raw.substring(0, 8);
+  let formatted = '';
+  for (let i = 0; i < raw.length; i++) {
+    if (i > 0 && i % 2 === 0) formatted += ' ';
+    formatted += raw[i];
+  }
+  target.value = formatted;
+  updateFormProgress();
+}
+
 function setupPhoneFormattingAndProgress() {
   const phoneInput = document.getElementById('phone');
   if (phoneInput) {
-    phoneInput.addEventListener('input', (e) => {
-      let raw = e.target.value.replace(/\D/g, '');
-      if (raw.length > 8) raw = raw.substring(0, 8);
-      let formatted = '';
-      for (let i = 0; i < raw.length; i++) {
-        if (i > 0 && i % 2 === 0) formatted += ' ';
-        formatted += raw[i];
-      }
-      e.target.value = formatted;
-      updateFormProgress();
-    });
+    phoneInput.addEventListener('input', () => handlePhoneInput(phoneInput));
   }
 
   const inputs = document.querySelectorAll('#quran-center-form input, #quran-center-form select');
@@ -405,8 +399,8 @@ function updateFormProgress() {
   const directorFr = document.getElementById('director_fr') ? document.getElementById('director_fr').value.trim() : '';
   const commune = document.getElementById('commune') ? document.getElementById('commune').value : '';
   const phone = document.getElementById('phone') ? document.getElementById('phone').value.replace(/\s/g, '').trim() : '';
-  const boys = parseInt(document.getElementById('boys_count').value) || 0;
-  const girls = parseInt(document.getElementById('girls_count').value) || 0;
+  const boys = parseInt(document.getElementById('boys_count') ? document.getElementById('boys_count').value : 0) || 0;
+  const girls = parseInt(document.getElementById('girls_count') ? document.getElementById('girls_count').value : 0) || 0;
   const union = document.getElementById('union_membership') ? document.getElementById('union_membership').value : '';
 
   let filled = 0;
@@ -429,9 +423,9 @@ function updateFormProgress() {
 }
 
 /**
- * Excel SheetJS Export
+ * Export Excel via SheetJS
  */
-function exportToExcel() {
+export function exportFormattedExcel() {
   const centers = getCentersList();
   const data = centers.map((c, i) => ({
     '#': i + 1,
@@ -460,22 +454,87 @@ function exportToExcel() {
 }
 
 /**
- * Grouped Print Report
+ * Backup and Restore Helpers
  */
-function printReport() {
+export function triggerRestoreJSON() {
+  const fileInput = document.getElementById('restore-file-input');
+  if (fileInput) fileInput.click();
+}
+
+export function restoreBackupJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (restoreBackupJSONData(data)) {
+        alert('تم استعادة النسخة الاحتياطية بنجاح!');
+        renderTable(getIsAdminLoggedIn());
+        updateStats();
+        updateAdminKPIStats();
+      } else {
+        alert('ملف النسخة الاحتياطية غير صالحة.');
+      }
+    } catch (err) {
+      alert('خطأ في قراءة ملف JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+/**
+ * Print Reports & Receipt Modals
+ */
+export function triggerPrintReport() {
   window.print();
 }
 
-// Global functions exports for inline HTML onclick compatibility
-window.toggleLanguage = () => {
-  const newLang = getCurrentLang() === 'ar' ? 'fr' : 'ar';
-  setCurrentLang(newLang);
-  applyLanguageUI();
-  renderTable(getIsAdminLoggedIn());
-};
+export function closeReceiptModalAndReset() {
+  const modal = document.getElementById('receipt-modal');
+  if (modal) modal.style.display = 'none';
+  resetForm();
+}
+
+export function closeDetailsModal() {
+  const modal = document.getElementById('details-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+export function closePrintOptionsModal() {
+  const modal = document.getElementById('print-options-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+// ----------------------------------------------------
+// Global Window Scope Bridge (Guarantees 100% Inline HTML Onclick Compatibility)
+// ----------------------------------------------------
+window.toggleLanguage = toggleLanguage;
 window.toggleMobileMenu = toggleMobileMenu;
 window.switchTab = switchTab;
-window.openLoginModal = () => {
-  const modal = document.getElementById('login-modal');
-  if (modal) modal.style.display = 'flex';
+window.openLoginModal = openLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.handleLoginSubmit = handleLoginSubmit;
+window.handleAdminLogout = handleAdminLogout;
+window.resetForm = resetForm;
+window.handleStudentCountInput = handleStudentCountInput;
+window.handlePhoneInput = handlePhoneInput;
+window.exportFormattedExcel = exportFormattedExcel;
+window.triggerPrintReport = triggerPrintReport;
+window.downloadBackupJSON = downloadBackupJSONFile;
+window.triggerRestoreJSON = triggerRestoreJSON;
+window.restoreBackupJSON = restoreBackupJSON;
+window.closeReceiptModalAndReset = closeReceiptModalAndReset;
+window.closeDetailsModal = closeDetailsModal;
+window.closePrintOptionsModal = closePrintOptionsModal;
+window.filterTable = () => renderTable(getIsAdminLoggedIn());
+window.setQuickFilterType = (type, el) => {
+  document.querySelectorAll('.quick-filter-pills .pill-btn').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (['ALL', STATUS_APPROVED, STATUS_PENDING, 'rejected'].includes(type)) {
+    setFilters({ status: type, pill: 'ALL' });
+  } else {
+    setFilters({ pill: type });
+  }
+  renderTable(getIsAdminLoggedIn());
 };

@@ -49,12 +49,14 @@ export function updateAuthUI() {
   const adminSection = document.getElementById('admin-communes-section');
   const printAdminControls = document.getElementById('admin-print-controls');
 
+  document.body.classList.toggle('admin-mode', isAdminLoggedIn);
+
   if (authContainer) {
     if (isAdminLoggedIn) {
       authContainer.innerHTML = `
         <div style="display: flex; align-items: center; gap: 8px;">
           <span class="badge badge-primary"><i class="fa-solid fa-user-shield"></i> مسؤول النظام</span>
-          <button class="footer-auth-link" id="btn-logout" title="${dict.logoutBtn}" style="color: #ef4444; border-color: #fca5a5;">
+          <button class="footer-auth-link" id="btn-logout" title="${dict.logoutBtn}" style="color: #ef4444; border-color: #fca5a5; font-weight: bold; cursor: pointer;">
             <i class="fa-solid fa-right-from-bracket"></i> <span>${dict.logoutBtn}</span>
           </button>
         </div>
@@ -63,7 +65,7 @@ export function updateAuthUI() {
       if (btnLogout) btnLogout.onclick = handleAdminLogout;
     } else {
       authContainer.innerHTML = `
-        <button type="button" class="footer-auth-link" id="btn-login-trigger">
+        <button type="button" class="footer-auth-link" id="btn-login-trigger" style="cursor: pointer;">
           <i class="fa-solid fa-lock"></i> <span id="txt-login-btn">${dict.loginBtn}</span>
         </button>
       `;

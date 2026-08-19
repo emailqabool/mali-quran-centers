@@ -36,10 +36,9 @@ export function loadStoredData() {
   if (savedCenters) {
     try {
       const parsed = JSON.parse(savedCenters);
-      // Migrate items: ensure status & ref_code fields exist
       centersList = parsed.map((item, idx) => ({
         ...item,
-        status: item.status || 'approved', // Legacy items default to approved
+        status: item.status || 'approved',
         ref_code: item.ref_code || `REC-2026-${String(item.id || idx + 1).padStart(4, '0')}`,
         name_ar: xssClean(item.name_ar || ''),
         name_fr: xssClean(item.name_fr || ''),
@@ -74,6 +73,41 @@ export function saveCentersToStorage() {
 
 export function saveCommunesToStorage() {
   localStorage.setItem('mali_quran_communes', JSON.stringify(communesList));
+}
+
+/**
+ * Backup & Restore Handlers (JSON)
+ */
+export function downloadBackupJSON() {
+  const backupData = {
+    version: "2026.1",
+    timestamp: new Date().toISOString(),
+    centers: centersList,
+    communes: communesList
+  };
+  const jsonStr = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `AECMEC_Mali_Quranic_Centers_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export function restoreBackupJSONData(jsonData) {
+  if (!jsonData || !Array.isArray(jsonData.centers)) {
+    return false;
+  }
+  centersList = jsonData.centers;
+  if (Array.isArray(jsonData.communes)) {
+    communesList = jsonData.communes;
+    saveCommunesToStorage();
+  }
+  saveCentersToStorage();
+  return true;
 }
 
 /**
