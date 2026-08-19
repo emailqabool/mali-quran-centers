@@ -1461,6 +1461,26 @@
     renderCommunesModalTable();
   }
 
+  function setupPhoneFormattingAndProgress() {
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', (e) => handlePhoneInput(e.target));
+    }
+    const boysInput = document.getElementById('boys_count');
+    const girlsInput = document.getElementById('girls_count');
+    if (boysInput) boysInput.addEventListener('input', handleStudentCountInput);
+    if (girlsInput) girlsInput.addEventListener('input', handleStudentCountInput);
+
+    const formInputs = document.querySelectorAll('#quran-center-form input, #quran-center-form select');
+    formInputs.forEach(input => {
+      input.addEventListener('input', updateFormProgress);
+      input.addEventListener('change', updateFormProgress);
+    });
+
+    handleStudentCountInput();
+    updateFormProgress();
+  }
+
   // ====================================================
   // 10. INITIALIZATION
   // ====================================================
