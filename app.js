@@ -472,18 +472,26 @@
   function updateAuthUI() {
     const dict = I18N[currentLang];
     const authContainer = document.getElementById('auth-status-container');
+    const listSection = document.getElementById('list-section');
     const kpiCards = document.getElementById('admin-kpi-cards');
     const navCommunes = document.getElementById('nav-manage-communes');
     const filterStatusGroup = document.getElementById('filter-status-group');
     const thStatus = document.getElementById('thStatus');
     const pillAdminOnly = document.querySelectorAll('.pill-admin-only');
+    const sidebar = document.getElementById('app-sidebar');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
 
     document.body.classList.toggle('admin-mode', isAdminLoggedIn);
 
+    if (listSection) listSection.style.display = isAdminLoggedIn ? 'block' : 'none';
     if (kpiCards) kpiCards.style.display = isAdminLoggedIn ? 'grid' : 'none';
     if (navCommunes) navCommunes.style.display = isAdminLoggedIn ? 'flex' : 'none';
     if (filterStatusGroup) filterStatusGroup.style.display = isAdminLoggedIn ? 'flex' : 'none';
     if (thStatus) thStatus.style.display = isAdminLoggedIn ? 'table-cell' : 'none';
+    if (sidebar) sidebar.style.display = isAdminLoggedIn ? 'block' : 'none';
+    if (mobileNav) mobileNav.style.display = isAdminLoggedIn ? 'flex' : 'none';
+    if (mobileMenuToggle) mobileMenuToggle.style.display = isAdminLoggedIn ? 'block' : 'none';
     pillAdminOnly.forEach(el => el.style.display = isAdminLoggedIn ? 'inline-flex' : 'none');
 
     if (authContainer) {

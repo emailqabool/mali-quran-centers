@@ -1692,62 +1692,74 @@ body.admin-mode .admin-kpi-bar {
 }
 
 /* ----------------------------------------------------
-   Admin Mode Conditional Visibility (Strict Role Isolation)
+   Public vs Admin Mode (Strict Isolation)
    ---------------------------------------------------- */
-.admin-kpi-bar {
+/* Non-Admin (Public): Hide everything except the Survey Form */
+body:not(.admin-mode) .sidebar,
+body:not(.admin-mode) .mobile-bottom-nav,
+body:not(.admin-mode) .mobile-menu-toggle,
+body:not(.admin-mode) #list-section,
+body:not(.admin-mode) .admin-kpi-bar,
+body:not(.admin-mode) #nav-manage-communes,
+body:not(.admin-mode) .admin-only-inline,
+body:not(.admin-mode) .admin-only-block,
+body:not(.admin-mode) #filter-status-group,
+body:not(.admin-mode) #thStatus,
+body:not(.admin-mode) .pill-admin-only {
   display: none !important;
+}
+
+body:not(.admin-mode) .main-layout {
+  justify-content: center;
+}
+
+body:not(.admin-mode) .content-area {
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Admin Mode: Reveal Everything */
+body.admin-mode .sidebar {
+  display: block !important;
+}
+
+body.admin-mode #list-section {
+  display: block !important;
 }
 
 body.admin-mode .admin-kpi-bar {
   display: grid !important;
 }
 
-#nav-manage-communes {
-  display: none !important;
-}
-
 body.admin-mode #nav-manage-communes {
   display: flex !important;
-}
-
-.admin-only-inline {
-  display: none !important;
 }
 
 body.admin-mode .admin-only-inline {
   display: inline-flex !important;
 }
 
-.admin-only-block {
-  display: none !important;
-}
-
 body.admin-mode .admin-only-block {
   display: block !important;
-}
-
-#filter-status-group {
-  display: none !important;
 }
 
 body.admin-mode #filter-status-group {
   display: flex !important;
 }
 
-#thStatus {
-  display: none;
-}
-
 body.admin-mode #thStatus {
   display: table-cell;
 }
 
-.pill-admin-only {
-  display: none !important;
-}
-
 body.admin-mode .pill-admin-only {
   display: inline-flex !important;
+}
+
+@media (max-width: 991px) {
+  body.admin-mode .mobile-bottom-nav {
+    display: flex !important;
+  }
 }
 
 /* ----------------------------------------------------
