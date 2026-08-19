@@ -1403,7 +1403,11 @@ html[dir="ltr"] .modal-close {
 
 /* Admin Dashboard KPI Cards */
 .admin-kpi-bar {
-  display: grid;
+  display: none !important;
+}
+
+body.admin-mode .admin-kpi-bar {
+  display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
   margin-bottom: 18px;
@@ -1728,6 +1732,14 @@ body.admin-mode .admin-only-block {
 
 body.admin-mode #filter-status-group {
   display: flex !important;
+}
+
+#thStatus {
+  display: none;
+}
+
+body.admin-mode #thStatus {
+  display: table-cell;
 }
 
 .pill-admin-only {

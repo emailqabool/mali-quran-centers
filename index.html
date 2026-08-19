@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260819_3">
   <!-- SheetJS for Styled Excel Export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -83,7 +83,7 @@
               <span id="lbl-nav-search">البحث والتصفية</span>
             </div>
           </li>
-          <li class="nav-item" onclick="openCommuneModal()" id="nav-manage-communes">
+          <li class="nav-item" onclick="openCommuneModal()" id="nav-manage-communes" style="display: none;">
             <i class="fa-solid fa-map-location-dot"></i>
             <div class="nav-labels">
               <span id="lbl-nav-communes">إدارة البلديات</span>
@@ -279,7 +279,7 @@
         <section class="card-box table-card" id="list-section">
           
           <!-- Admin Dashboard KPI Cards Bar -->
-          <div class="admin-kpi-bar" id="admin-kpi-cards">
+          <div class="admin-kpi-bar" id="admin-kpi-cards" style="display: none;">
             <div class="kpi-card">
               <div class="kpi-icon icon-emerald"><i class="fa-solid fa-school"></i></div>
               <div class="kpi-info">
@@ -337,8 +337,8 @@
             <button class="pill-btn filter-pill" data-filter="filles"><i class="fa-solid fa-child-dress"></i> <span id="lbl-pill-girls">بنات فقط</span></button>
             <button class="pill-btn filter-pill" data-filter="mixte"><i class="fa-solid fa-people-hold"></i> <span id="lbl-pill-mixte">مشتركة</span></button>
             <button class="pill-btn filter-pill" data-filter="union"><i class="fa-solid fa-certificate"></i> <span id="lbl-pill-union">أعضاء الاتحاد</span></button>
-            <button class="pill-btn filter-pill pill-admin-only" data-filter="pending"><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> <span id="lbl-pill-pending">قيد المراجعة 🟡 <span id="pending-moderation-badge" class="kpi-pending-badge" style="display:none;">0</span></span></button>
-            <button class="pill-btn filter-pill pill-admin-only" data-filter="rejected"><i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> <span id="lbl-pill-rejected">المرفوضة 🔴</span></button>
+            <button class="pill-btn filter-pill pill-admin-only" data-filter="pending" style="display: none;"><i class="fa-solid fa-clock" style="color:#f59e0b;"></i> <span id="lbl-pill-pending">قيد المراجعة 🟡 <span id="pending-moderation-badge" class="kpi-pending-badge" style="display:none;">0</span></span></button>
+            <button class="pill-btn filter-pill pill-admin-only" data-filter="rejected" style="display: none;"><i class="fa-solid fa-circle-xmark" style="color:#ef4444;"></i> <span id="lbl-pill-rejected">المرفوضة 🔴</span></button>
           </div>
 
           <!-- Controls Bar (Filter, Search, Export Excel, Print) -->
@@ -366,7 +366,7 @@
               </select>
             </div>
 
-            <div class="control-group filter-select" id="filter-status-group">
+            <div class="control-group filter-select" id="filter-status-group" style="display: none;">
               <label for="filter-status" id="lbl-filter-status">حالة التدقيق:</label>
               <select id="filter-status">
                 <option value="ALL" id="opt-filt-status-all">الكل</option>
@@ -398,7 +398,7 @@
             <table class="data-table" id="schools-table">
               <thead>
                 <tr>
-                  <th id="thStatus">حالة التوثيق</th>
+                  <th id="thStatus" style="display: none;">حالة التوثيق</th>
                   <th id="thCenterName">اسم المركز القرآني</th>
                   <th id="thDirectorName">المدير / المشرف</th>
                   <th id="thCommune">البلدية</th>
@@ -790,6 +790,6 @@
   </div>
 
   <!-- JavaScript Bundle -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20260819_3"></script>
 </body>
 </html>

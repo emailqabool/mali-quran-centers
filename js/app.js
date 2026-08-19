@@ -472,9 +472,19 @@
   function updateAuthUI() {
     const dict = I18N[currentLang];
     const authContainer = document.getElementById('auth-status-container');
+    const kpiCards = document.getElementById('admin-kpi-cards');
+    const navCommunes = document.getElementById('nav-manage-communes');
+    const filterStatusGroup = document.getElementById('filter-status-group');
+    const thStatus = document.getElementById('thStatus');
+    const pillAdminOnly = document.querySelectorAll('.pill-admin-only');
 
-    // Strict toggle of body.admin-mode
     document.body.classList.toggle('admin-mode', isAdminLoggedIn);
+
+    if (kpiCards) kpiCards.style.display = isAdminLoggedIn ? 'grid' : 'none';
+    if (navCommunes) navCommunes.style.display = isAdminLoggedIn ? 'flex' : 'none';
+    if (filterStatusGroup) filterStatusGroup.style.display = isAdminLoggedIn ? 'flex' : 'none';
+    if (thStatus) thStatus.style.display = isAdminLoggedIn ? 'table-cell' : 'none';
+    pillAdminOnly.forEach(el => el.style.display = isAdminLoggedIn ? 'inline-flex' : 'none');
 
     if (authContainer) {
       if (isAdminLoggedIn) {
@@ -629,11 +639,12 @@
 
     const filtered = filterCentersList();
     const dict = I18N[currentLang];
+    const totalCols = isAdminLoggedIn ? 8 : 7;
 
     if (filtered.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="8" style="text-align:center; padding: 32px; color: var(--text-muted);">
+          <td colspan="${totalCols}" style="text-align:center; padding: 32px; color: var(--text-muted);">
             <i class="fa-solid fa-folder-open" style="font-size: 32px; margin-bottom: 8px; opacity: 0.5;"></i><br>
             ${currentLang === 'ar' ? 'لا توجد مراكز مطابقة لشروط البحث' : 'Aucun centre ne correspond aux critères.'}
           </td>
@@ -699,7 +710,7 @@
 
       html += `
         <tr>
-          <td>${statusBadgeHTML}</td>
+          ${isAdminLoggedIn ? `<td>${statusBadgeHTML}</td>` : ''}
           <td>
             <strong>${name}</strong><br>
             <small style="color: var(--text-muted); font-size: 11px;">${c.ref_code || ''}</small>
