@@ -1,46 +1,73 @@
 /**
  * =========================================================================
  * منصة حصر مدارس ومراكز تحفيظ القرآن الكريم في مالي - AECMEC MALI
- * Google Apps Script Cloud Database Engine (Centres & Communes)
+ * Google Apps Script Cloud Engine - متوافق 100% مع جدولكم الحالي
  * =========================================================================
  * 
- * تعليمات التثبيت:
- * 1. افتح جدول Google Sheets جديد أو الجدول الحالي.
- * 2. اضغط على (Extensions / الإضافات) -> (Apps Script).
- * 3. امسح أي كود موجود والصق هذا الكود كاملاً.
- * 4. اضغط على (Deploy / نشر) -> (New deployment / نشر جديد).
- * 5. اختر نوع النشر: (Web app / تطبيق ويب).
- * 6. في حقل (Execute as): اختر (Me / حسابي).
- * 7. في حقل (Who has access): اختر (Anyone / أي شخص) - ضروري جداً لتلقي البيانات.
- * 8. اضغط (Deploy / نشر) وانسخ رابط الويب (Web App URL).
+ * كيفية التحديث في جدولكم الحالي:
+ * 1. في جدولكم المفتوح في الصورة، اضغط من القائمة العلوية على (الإضافات / Extensions) -> (Apps Script).
+ * 2. امسح أي كود موجود هناك، واستبدله بهذا الكود كاملاً.
+ * 3. اضغط على (حفظ / Save 💾).
+ * 4. اضغط على (نشر / Deploy) -> (إدارة عمليات النشر / Manage deployments) أو (نشر جديد / New deployment).
+ * 5. تأكد أن الوصول (Who has access) مضبوط على: (Anyone / أي شخص).
+ * 6. اضغط Deploy وانسخ رابط الويب (Web App URL).
  */
 
-const SHEET_CENTRES = "Centres";
-const SHEET_COMMUNES = "Communes";
+const SHEET_COMMUNES_NAME = "البلديات";
+
+function getCentresSheet(ss) {
+  // يختار الورقة الأولى في الملف تلقائياً مهما كان اسمها (الورقة 1 / Sheet1 / المراكز)
+  const sheets = ss.getSheets();
+  return sheets[0];
+}
+
+function getCommunesSheet(ss) {
+  let sheet = ss.getSheetByName(SHEET_COMMUNES_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_COMMUNES_NAME);
+    sheet.appendRow(["ID", "اسم البلدية (عربي)", "Nom Commune (FR)"]);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, 3).setBackground("#1b4332").setFontColor("#ffffff").setFontWeight("bold");
+
+    // البلديات الافتراضية
+    const defaultCommunes = [
+      ["c1", "البلدية الأولى - باماكو", "Commune I - Bamako"],
+      ["c2", "البلدية الثانية - باماكو", "Commune II - Bamako"],
+      ["c3", "البلدية الثالثة - باماكو", "Commune III - Bamako"],
+      ["c4", "البلدية الرابعة - باماكو", "Commune IV - Bamako"],
+      ["c5", "البلدية الخامسة - باماكو", "Commune V - Bamako"],
+      ["c6", "البلدية السادسة - باماكو", "Commune VI - Bamako"],
+      ["c7", "كايس", "Kayes"],
+      ["c8", "كوليكورو", "Koulikoro"],
+      ["c9", "سيكاسو", "Sikasso"],
+      ["c10", "سيغو", "Ségou"],
+      ["c11", "موبتي", "Mopti"],
+      ["c12", "تمبكتو", "Tombouctou"],
+      ["c13", "غاو", "Gao"],
+      ["c14", "كيدال", "Kidal"]
+    ];
+    defaultCommunes.forEach(c => sheet.appendRow(c));
+  }
+  return sheet;
+}
 
 function doGet(e) {
   const lock = LockService.getScriptLock();
   lock.tryLock(10000);
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    initSheetsIfNeeded(ss);
-
     const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "getAllData";
 
     if (action === "getAllData" || action === "getData") {
-      const centers = getCentersFromSheet(ss);
-      const communes = getCommunesFromSheet(ss);
+      const centers = readCentersFromActiveSheet(ss);
+      const communes = readCommunesFromSheet(ss);
 
-      const responseData = {
+      return ContentService.createTextOutput(JSON.stringify({
         success: true,
         version: "2026.2",
-        timestamp: new Date().toISOString(),
         centers: centers,
         communes: communes
-      };
-
-      return ContentService.createTextOutput(JSON.stringify(responseData))
-        .setMimeType(ContentService.MimeType.JSON);
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: "AECMEC API Ready" }))
@@ -59,9 +86,8 @@ function doPost(e) {
   lock.tryLock(15000);
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    initSheetsIfNeeded(ss);
-
     let data = {};
+
     if (e && e.postData && e.postData.contents) {
       try {
         data = JSON.parse(e.postData.contents);
@@ -76,26 +102,26 @@ function doPost(e) {
 
     if (action === "addCenter" || action === "saveCenter") {
       const center = data.center || data;
-      saveCenterToSheet(ss, center);
-      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Center saved successfully" }))
+      appendOrUpdateCenter(ss, center);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Center saved" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     if (action === "saveCommunes") {
       const communes = data.communes || [];
       saveCommunesToSheet(ss, communes);
-      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Communes saved successfully" }))
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Communes saved" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     if (action === "updateCenterStatus") {
-      updateCenterStatusInSheet(ss, data.id, data.status);
-      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Center status updated" }))
+      updateCenterStatus(ss, data.id, data.status);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Status updated" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     if (action === "deleteCenter") {
-      deleteCenterFromSheet(ss, data.id);
+      deleteCenter(ss, data.id);
       return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Center deleted" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
@@ -112,127 +138,114 @@ function doPost(e) {
 }
 
 // ----------------------------------------------------
-// Helper Functions for Sheets
+// دوال قراءة وكتابة المراكز متوافقة 100% مع ترتيب أعمدة جدولكم الحالي
+// [التاريخ | رمز التسجيل | اسم المركز (عربي) | Nom du centre | المدير (عربي) | Directeur (Fr) | البلدية | العنوان | رقم الهاتف | نوع الطلاب | بنين | بنات | المجموع | عضوية الإتحاد | حالة التوثيق]
 // ----------------------------------------------------
-function initSheetsIfNeeded(ss) {
-  // Init Centres Sheet
-  let cSheet = ss.getSheetByName(SHEET_CENTRES);
-  if (!cSheet) {
-    cSheet = ss.insertSheet(SHEET_CENTRES);
-    cSheet.appendRow([
-      "ID", "Ref_Code", "Nom_Ar", "Nom_Fr", "Directeur_Ar", "Directeur_Fr",
-      "Adresse_Ar", "Adresse_Fr", "Commune", "Telephone", "Garcons", "Filles",
-      "Total", "Type_Genre", "Adhesion_Union", "Statut_Validation", "Date_Enregistrement"
-    ]);
-    cSheet.setFrozenRows(1);
-    cSheet.getRange(1, 1, 1, 17).setBackground("#1b4332").setFontColor("#ffffff").setFontWeight("bold");
-  }
-
-  // Init Communes Sheet
-  let comSheet = ss.getSheetByName(SHEET_COMMUNES);
-  if (!comSheet) {
-    comSheet = ss.insertSheet(SHEET_COMMUNES);
-    comSheet.appendRow(["ID", "Nom_Ar", "Nom_Fr"]);
-    comSheet.setFrozenRows(1);
-    comSheet.getRange(1, 1, 1, 3).setBackground("#1b4332").setFontColor("#ffffff").setFontWeight("bold");
-    
-    // Seed default communes
-    const defaultCommunes = [
-      ["c1", "البلدية الأولى - باماكو", "Commune I - Bamako"],
-      ["c2", "البلدية الثانية - باماكو", "Commune II - Bamako"],
-      ["c3", "البلدية الثالثة - باماكو", "Commune III - Bamako"],
-      ["c4", "البلدية الرابعة - باماكو", "Commune IV - Bamako"],
-      ["c5", "البلدية الخامسة - باماكو", "Commune V - Bamako"],
-      ["c6", "البلدية السادسة - باماكو", "Commune VI - Bamako"],
-      ["c7", "كايس", "Kayes"],
-      ["c8", "كوليكورو", "Koulikoro"],
-      ["c9", "سيكاسو", "Sikasso"],
-      ["c10", "سيغو", "Ségou"],
-      ["c11", "موبتي", "Mopti"],
-      ["c12", "تمبكتو", "Tombouctou"],
-      ["c13", "غاو", "Gao"],
-      ["c14", "كيدال", "Kidal"]
-    ];
-    defaultCommunes.forEach(c => comSheet.appendRow(c));
-  }
-}
-
-function getCentersFromSheet(ss) {
-  const sheet = ss.getSheetByName(SHEET_CENTRES);
-  if (!sheet) return [];
+function readCentersFromActiveSheet(ss) {
+  const sheet = getCentresSheet(ss);
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
   const centers = [];
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (!row[0] && !row[2]) continue;
+    // تجاهل الصفوف الفارغة
+    if (!row[1] && !row[2]) continue;
+
+    const rawStatus = row[14] ? String(row[14]).trim() : "";
+    let status = "approved";
+    if (rawStatus === "pending" || rawStatus === "قيد المراجعة") status = "pending";
+    else if (rawStatus === "rejected" || rawStatus === "مرفوض") status = "rejected";
+
     centers.push({
-      id: row[0],
-      ref_code: row[1],
-      name_ar: row[2],
-      name_fr: row[3],
-      director_ar: row[4],
-      director_fr: row[5],
-      address_ar: row[6],
-      address_fr: row[7],
-      commune: row[8],
-      phone: String(row[9]),
+      id: i,
+      created_at: String(row[0] || ""),
+      ref_code: String(row[1] || `AECMEC-${i}`),
+      name_ar: String(row[2] || ""),
+      name_fr: String(row[3] || ""),
+      director_ar: String(row[4] || ""),
+      director_fr: String(row[5] || ""),
+      commune: String(row[6] || ""),
+      address_ar: String(row[7] || ""),
+      address_fr: String(row[7] || ""),
+      phone: String(row[8] || ""),
+      gender_type: String(row[9] || "mixte"),
       boys: Number(row[10]) || 0,
       girls: Number(row[11]) || 0,
       total: Number(row[12]) || 0,
-      gender_type: row[13] || "mixte",
-      membership: row[14] || "Non",
-      status: row[15] || "approved",
-      created_at: row[16] || new Date().toISOString()
+      membership: String(row[13] || "Non"),
+      status: status
     });
   }
   return centers;
 }
 
-function saveCenterToSheet(ss, center) {
-  const sheet = ss.getSheetByName(SHEET_CENTRES);
-  if (!sheet) return;
-
+function appendOrUpdateCenter(ss, center) {
+  const sheet = getCentresSheet(ss);
   const data = sheet.getDataRange().getValues();
-  let foundRow = -1;
+  let targetRow = -1;
+
+  // البحث بالرمز المرجعي أو المعرف
   for (let i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(center.id)) {
-      foundRow = i + 1;
+    if (center.ref_code && String(data[i][1]).trim() === String(center.ref_code).trim()) {
+      targetRow = i + 1;
       break;
     }
   }
 
+  const nowFormatted = Utilities.formatDate(new Date(), "GMT", "yyyy/MM/dd HH:mm");
   const rowValues = [
-    center.id || Date.now(),
-    center.ref_code || "",
+    center.created_at || nowFormatted,
+    center.ref_code || `AECMEC ${Math.floor(1000 + Math.random() * 9000)}`,
     center.name_ar || "",
     center.name_fr || "",
     center.director_ar || "",
     center.director_fr || "",
-    center.address_ar || "",
-    center.address_fr || "",
     center.commune || "",
+    center.address_ar || center.address_fr || "",
     center.phone || "",
-    center.boys || 0,
-    center.girls || 0,
-    center.total || 0,
     center.gender_type || "mixte",
+    Number(center.boys) || 0,
+    Number(center.girls) || 0,
+    Number(center.total) || 0,
     center.membership || "Non",
-    center.status || "approved",
-    center.created_at || new Date().toISOString()
+    center.status || "approved"
   ];
 
-  if (foundRow > 0) {
-    sheet.getRange(foundRow, 1, 1, 17).setValues([rowValues]);
+  if (targetRow > 0) {
+    sheet.getRange(targetRow, 1, 1, 15).setValues([rowValues]);
   } else {
     sheet.appendRow(rowValues);
   }
 }
 
-function getCommunesFromSheet(ss) {
-  const sheet = ss.getSheetByName(SHEET_COMMUNES);
-  if (!sheet) return [];
+function updateCenterStatus(ss, centerIdOrRef, newStatus) {
+  const sheet = getCentresSheet(ss);
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim() === String(centerIdOrRef).trim() || String(i) === String(centerIdOrRef)) {
+      sheet.getRange(i + 1, 15).setValue(newStatus);
+      break;
+    }
+  }
+}
+
+function deleteCenter(ss, centerIdOrRef) {
+  const sheet = getCentresSheet(ss);
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim() === String(centerIdOrRef).trim() || String(i) === String(centerIdOrRef)) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+}
+
+// ----------------------------------------------------
+// دوال إدارة البلديات في ورقة "البلديات" المنفصلة
+// ----------------------------------------------------
+function readCommunesFromSheet(ss) {
+  const sheet = getCommunesSheet(ss);
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
@@ -250,40 +263,18 @@ function getCommunesFromSheet(ss) {
 }
 
 function saveCommunesToSheet(ss, communes) {
-  let sheet = ss.getSheetByName(SHEET_COMMUNES);
+  let sheet = ss.getSheetByName(SHEET_COMMUNES_NAME);
   if (sheet) {
-    ss.deleteSheet(sheet);
+    sheet.clear();
+  } else {
+    sheet = ss.insertSheet(SHEET_COMMUNES_NAME);
   }
-  sheet = ss.insertSheet(SHEET_COMMUNES);
-  sheet.appendRow(["ID", "Nom_Ar", "Nom_Fr"]);
+
+  sheet.appendRow(["ID", "اسم البلدية (عربي)", "Nom Commune (FR)"]);
   sheet.setFrozenRows(1);
   sheet.getRange(1, 1, 1, 3).setBackground("#1b4332").setFontColor("#ffffff").setFontWeight("bold");
 
   communes.forEach(c => {
     sheet.appendRow([c.id, c.name_ar, c.name_fr]);
   });
-}
-
-function updateCenterStatusInSheet(ss, centerId, newStatus) {
-  const sheet = ss.getSheetByName(SHEET_CENTRES);
-  if (!sheet) return;
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(centerId)) {
-      sheet.getRange(i + 1, 16).setValue(newStatus);
-      break;
-    }
-  }
-}
-
-function deleteCenterFromSheet(ss, centerId) {
-  const sheet = ss.getSheetByName(SHEET_CENTRES);
-  if (!sheet) return;
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(centerId)) {
-      sheet.deleteRow(i + 1);
-      break;
-    }
-  }
 }
