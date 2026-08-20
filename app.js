@@ -543,8 +543,8 @@
     document.body.classList.toggle('admin-mode', isAdminLoggedIn);
 
     if (headerAuthBox) {
-      headerAuthBox.style.display = 'inline-flex';
       if (isAdminLoggedIn) {
+        headerAuthBox.style.display = 'inline-flex';
         headerAuthBox.innerHTML = `
           <button type="button" class="btn-header-logout" onclick="handleAdminLogout()" title="${dict.logoutBtn}">
             <i class="fa-solid fa-right-from-bracket"></i>
@@ -552,12 +552,8 @@
           </button>
         `;
       } else {
-        headerAuthBox.innerHTML = `
-          <button type="button" class="btn-header-login" onclick="openLoginModal()" title="${dict.loginBtn}">
-            <i class="fa-solid fa-lock"></i>
-            <span id="txt-header-login">${dict.loginBtn}</span>
-          </button>
-        `;
+        headerAuthBox.style.display = 'none';
+        headerAuthBox.innerHTML = '';
       }
     }
     if (sidebarAdminBox) sidebarAdminBox.style.display = isAdminLoggedIn ? 'flex' : 'none';

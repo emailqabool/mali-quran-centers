@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="styles.css?v=20260820_v5">
+  <link rel="stylesheet" href="styles.css?v=20260820_v6">
   <!-- SheetJS for Styled Excel Export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -48,12 +48,12 @@
           </div>
         </div>
 
-        <!-- Controls (Language Switcher & Admin Quick Auth) -->
+        <!-- Controls (Language Switcher & Admin Quick Logout) -->
         <div class="header-controls">
-          <div id="header-auth-box">
-            <button type="button" class="btn-header-login" onclick="openLoginModal()" title="دخول المسؤول">
-              <i class="fa-solid fa-lock"></i>
-              <span id="txt-header-login">دخول المسؤول</span>
+          <div id="header-auth-box" class="admin-only-inline" style="display: none;">
+            <button type="button" class="btn-header-logout" onclick="handleAdminLogout()" title="تسجيل الخروج">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span id="txt-header-logout">تسجيل الخروج</span>
             </button>
           </div>
           <button class="lang-toggle-btn" id="btn-lang-toggle" onclick="toggleLanguage()" title="تغيير اللغة / Changer la langue">
@@ -815,6 +815,6 @@
   </div>
 
   <!-- JavaScript Bundle -->
-  <script src="js/app.js?v=20260820_v5"></script>
+  <script src="js/app.js?v=20260820_v6"></script>
 </body>
 </html>
