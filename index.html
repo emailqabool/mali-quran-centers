@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="styles.css?v=20260820_v8">
+  <link rel="stylesheet" href="styles.css?v=20260820_v9">
   <!-- SheetJS for Styled Excel Export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -237,12 +237,12 @@
             <!-- Center Type & Target Students Selector -->
             <div class="form-row single-field">
               <div class="field-group">
-                <label id="lbl-center-type-heading" style="font-weight: 800; color: #0b5d3f;">
+                <label id="lbl-center-type-heading" style="font-weight: 800; color: #0b5d3f; font-size: 14.5px;">
                   <i class="fa-solid fa-layer-group"></i> نوع المركز والطلاب المستهدفين <span class="req">*</span>
                 </label>
                 <div class="center-type-radio-grid">
-                  <label class="type-radio-card active" id="card-type-garcons" for="type_garcons">
-                    <input type="radio" name="center_gender_select" id="type_garcons" value="garcons" checked onchange="setCenterTypeSelection('garcons')">
+                  <label class="type-radio-card" id="card-type-garcons" for="type_garcons">
+                    <input type="radio" name="center_gender_select" id="type_garcons" value="garcons" onchange="setCenterTypeSelection('garcons')">
                     <div class="radio-card-content">
                       <i class="fa-solid fa-child radio-icon"></i>
                       <div class="radio-card-text">
@@ -275,23 +275,29 @@
                   </label>
                 </div>
 
-                <div class="type-hint-note" id="type-hint-box" style="display: flex;">
+                <!-- Guiding Prompt when nothing is selected yet -->
+                <div class="type-unselected-prompt" id="type-unselected-prompt">
+                  <i class="fa-solid fa-hand-pointer"></i>
+                  <span id="txt-type-prompt">يرجى الضغط على أحد الخيارات الثلاثة أعلاه لتحديد نوع المركز وإظهار حقول الأعداد.</span>
+                </div>
+
+                <div class="type-hint-note" id="type-hint-box" style="display: none;">
                   <i class="fa-solid fa-circle-info"></i>
-                  <span id="type-hint-text">ملاحظة: إذا كان لديكم فرع أو مركز منفصل للبنات، يرجى تسجيله بشكل مستقل في استمارة جديدة.</span>
+                  <span id="type-hint-text">ملاحظة: إذا كان لديكم فرع أو مركز منفصل، يرجى تسجيله بشكل مستقل في استمارة جديدة.</span>
                 </div>
                 
-                <input type="hidden" id="student_gender_type" value="garcons">
+                <input type="hidden" id="student_gender_type" value="">
               </div>
             </div>
 
-            <!-- Student Count & Dynamic Fields Row -->
-            <div class="form-row triple-fields" id="students-count-row">
+            <!-- Student Count & Dynamic Fields Row (Hidden until selected) -->
+            <div class="form-row triple-fields" id="students-count-row" style="display: none;">
               <div class="field-group" id="group-boys-count">
                 <label for="boys_count" id="lbl-boys-count"><i class="fa-solid fa-child" style="color: #0b5d3f;"></i> عدد الطلاب (البنين)</label>
                 <input type="number" id="boys_count" min="0" value="0" placeholder="0" onfocus="this.select()" oninput="handleStudentCountInput()">
               </div>
               
-              <div class="field-group" id="group-girls-count" style="display: none;">
+              <div class="field-group" id="group-girls-count">
                 <label for="girls_count" id="lbl-girls-count"><i class="fa-solid fa-child-dress" style="color: #0b5d3f;"></i> عدد الطالبات (البنات)</label>
                 <input type="number" id="girls_count" min="0" value="0" placeholder="0" onfocus="this.select()" oninput="handleStudentCountInput()">
               </div>
@@ -303,8 +309,8 @@
                     <input type="number" id="total_students" readonly class="readonly-bg" value="0" style="font-weight: 800; color: #0b5d3f; font-size: 16px;">
                     <i class="fa-solid fa-users input-icon"></i>
                   </div>
-                  <div class="auto-type-badge badge-garcons" id="auto-type-badge" title="نوع المركز">
-                    <i class="fa-solid fa-people-hold"></i> <span id="auto-type-lbl">بنين فقط</span>
+                  <div class="auto-type-badge" id="auto-type-badge" title="نوع المركز">
+                    <i class="fa-solid fa-people-hold"></i> <span id="auto-type-lbl">مشترك</span>
                   </div>
                 </div>
               </div>
@@ -339,44 +345,44 @@
         </section>
 
 
-        <!-- SECTION 2: REGISTERED SCHOOLS LIST & FILTER SYSTEM (ADMIN ONLY) -->
-        <section class="card-box table-card" id="list-section" style="display: none;">
+        <!-- SECTION 2: SCHOOLS DIRECTORY & ADMIN MODERATION TABLE (Admin Mode Only) -->
+        <section class="card-box" id="list-section" style="display: none;">
           
-          <!-- Admin Dashboard KPI Cards Bar -->
+          <!-- Admin KPI Summary Cards -->
           <div class="admin-kpi-bar" id="admin-kpi-cards" style="display: none;">
             <div class="kpi-card">
-              <div class="kpi-icon icon-emerald"><i class="fa-solid fa-school"></i></div>
+              <div class="kpi-icon" style="background:#e8f4ed; color:#0b5d3f;"><i class="fa-solid fa-mosque"></i></div>
               <div class="kpi-info">
                 <span class="kpi-val" id="kpi-total-centers">0</span>
-                <span class="kpi-lbl" id="lbl-kpi-total-centers">إجمالي المراكز المسجلة</span>
+                <span class="kpi-lbl" id="kpiTotalCenters">إجمالي المراكز المسجلة</span>
               </div>
             </div>
-
+            
             <div class="kpi-card">
-              <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+              <div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-graduation-cap"></i></div>
               <div class="kpi-info">
                 <span class="kpi-val" id="kpi-total-students">0</span>
-                <span class="kpi-lbl" id="lbl-kpi-total-students">إجمالي الطلاب والطالبات</span>
+                <span class="kpi-lbl" id="kpiTotalStudents">إجمالي الطلاب والطالبات</span>
               </div>
             </div>
 
             <div class="kpi-card">
-              <div class="kpi-icon icon-gold"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-map-location-dot"></i></div>
               <div class="kpi-info">
-                <span class="kpi-val" id="kpi-top-commune">-</span>
-                <span class="kpi-lbl" id="lbl-kpi-top-commune">البلدية الأكثر تسجيلاً</span>
+                <span class="kpi-val" id="kpi-top-commune" style="font-size: 15px;">-</span>
+                <span class="kpi-lbl" id="kpiTopCommune">البلدية الأكثر تسجيلاً</span>
               </div>
             </div>
 
             <div class="kpi-card">
-              <div class="kpi-icon icon-purple"><i class="fa-solid fa-certificate"></i></div>
+              <div class="kpi-icon" style="background:#ede9fe; color:#7c3aed;"><i class="fa-solid fa-certificate"></i></div>
               <div class="kpi-info">
                 <span class="kpi-val" id="kpi-union-ratio">0%</span>
-                <span class="kpi-lbl" id="lbl-kpi-union-ratio">نسبة الأعضاء بالاتحاد</span>
+                <span class="kpi-lbl" id="kpiUnionRatio">نسبة الأعضاء بالاتحاد</span>
               </div>
             </div>
 
-            <div class="kpi-card kpi-pending-card">
+            <div class="kpi-card">
               <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-clock-rotate-left"></i></div>
               <div class="kpi-info">
                 <span class="kpi-val" style="color:#d97706;" id="kpi-pending-moderation">0</span>
@@ -414,6 +420,16 @@
                   <input type="text" id="search-input" placeholder="بحث...">
                   <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 </div>
+              </div>
+
+              <div class="control-group filter-select">
+                <label for="filter-type" id="lbl-filter-type">نوع المركز:</label>
+                <select id="filter-type">
+                  <option value="ALL" id="opt-filt-type-all">الكل</option>
+                  <option value="garcons" id="opt-filt-type-garcons">بنين فقط 👦</option>
+                  <option value="filles" id="opt-filt-type-filles">بنات فقط 👧</option>
+                  <option value="mixte" id="opt-filt-type-mixte">مشترك 👫</option>
+                </select>
               </div>
 
               <div class="control-group filter-select">
@@ -863,6 +879,6 @@
   </div>
 
   <!-- JavaScript Bundle -->
-  <script src="js/app.js?v=20260820_v8"></script>
+  <script src="js/app.js?v=20260820_v9"></script>
 </body>
 </html>

@@ -393,6 +393,7 @@
   let activeFilterCommune = 'ALL';
   let activeFilterMembership = 'ALL';
   let activeFilterStatus = 'ALL';
+  let activeFilterType = 'ALL';
   let activePillFilter = 'ALL';
   let searchQuery = '';
 
@@ -704,6 +705,7 @@
 
       if (activeFilterCommune !== 'ALL' && center.commune !== activeFilterCommune) return false;
       if (activeFilterMembership !== 'ALL' && center.membership !== activeFilterMembership) return false;
+      if (activeFilterType !== 'ALL' && center.gender_type !== activeFilterType) return false;
 
       if (activePillFilter !== 'ALL') {
         if (activePillFilter === 'UNION' || activePillFilter === 'union') {
@@ -948,9 +950,17 @@
     const membership = document.getElementById('union_membership').value;
 
     const total = boys + girls;
-    let genderType = 'mixte';
-    if (boys > 0 && girls === 0) genderType = 'garcons';
-    else if (girls > 0 && boys === 0) genderType = 'filles';
+    const genderTypeHidden = document.getElementById('student_gender_type');
+    const genderType = genderTypeHidden ? genderTypeHidden.value : '';
+
+    if (!genderType) {
+      alert(currentLang === 'ar' 
+        ? 'يرجى اختيار نوع المركز أولاً (بنين فقط / بنات فقط / مشترك).' 
+        : 'Veuillez d\'abord choisir le type de centre (Garçons / Filles / Mixte).');
+      const headingEl = document.getElementById('lbl-center-type-heading');
+      if (headingEl) headingEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     let targetCenter = null;
 
@@ -1020,13 +1030,13 @@
     const formCardTitle = document.getElementById('form-card-title');
     if (formCardTitle) formCardTitle.textContent = I18N[currentLang].formTitleNew;
     
-    setCenterTypeSelection('garcons');
+    setCenterTypeSelection('');
     updateFormProgress();
   }
 
   function setCenterTypeSelection(type) {
     const genderTypeHidden = document.getElementById('student_gender_type');
-    if (genderTypeHidden) genderTypeHidden.value = type;
+    if (genderTypeHidden) genderTypeHidden.value = type || '';
 
     // Update Radio Elements
     const radioGarcons = document.getElementById('type_garcons');
@@ -1044,13 +1054,27 @@
     if (cardFilles) cardFilles.classList.toggle('active', type === 'filles');
     if (cardMixte) cardMixte.classList.toggle('active', type === 'mixte');
 
-    // Dynamic Fields Display
+    const promptBox = document.getElementById('type-unselected-prompt');
+    const studentsRow = document.getElementById('students-count-row');
     const groupBoys = document.getElementById('group-boys-count');
     const groupGirls = document.getElementById('group-girls-count');
     const boysInput = document.getElementById('boys_count');
     const girlsInput = document.getElementById('girls_count');
     const hintBox = document.getElementById('type-hint-box');
     const hintText = document.getElementById('type-hint-text');
+
+    if (!type) {
+      if (promptBox) promptBox.style.display = 'flex';
+      if (studentsRow) studentsRow.style.display = 'none';
+      if (hintBox) hintBox.style.display = 'none';
+      if (boysInput) boysInput.value = '0';
+      if (girlsInput) girlsInput.value = '0';
+      handleStudentCountInput();
+      return;
+    }
+
+    if (promptBox) promptBox.style.display = 'none';
+    if (studentsRow) studentsRow.style.display = 'grid';
 
     if (type === 'garcons') {
       if (groupBoys) groupBoys.style.display = 'block';
@@ -1745,6 +1769,22 @@
       });
     }
 
+    const filterTypeSelect = document.getElementById('filter-type');
+    if (filterTypeSelect) {
+      filterTypeSelect.addEventListener('change', (e) => {
+        activeFilterType = e.target.value;
+        document.querySelectorAll('.quick-filter-pills .pill-btn, .filter-pill').forEach(p => {
+          const f = p.getAttribute('data-filter') || p.getAttribute('data-type');
+          if (f === activeFilterType || (activeFilterType === 'ALL' && f === 'ALL')) {
+            p.classList.add('active');
+          } else if (['garcons', 'filles', 'mixte', 'ALL'].includes(f)) {
+            p.classList.remove('active');
+          }
+        });
+        renderTable();
+      });
+    }
+
     const filterStatus = document.getElementById('filter-status');
     if (filterStatus) {
       filterStatus.addEventListener('change', (e) => {
@@ -1754,7 +1794,7 @@
     }
 
     setupPhoneFormattingAndProgress();
-    setCenterTypeSelection('garcons');
+    setCenterTypeSelection('');
   }
 
   if (document.readyState === 'loading') {
@@ -1777,6 +1817,13 @@
         } else {
           activePillFilter = filterType;
         }
+
+        if (['garcons', 'filles', 'mixte', 'ALL'].includes(filterType)) {
+          activeFilterType = filterType;
+          const fSelect = document.getElementById('filter-type');
+          if (fSelect) fSelect.value = filterType;
+        }
+
         renderTable();
       }
     }
