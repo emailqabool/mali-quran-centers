@@ -9,7 +9,7 @@
   // ====================================================
   // 1. CONFIG & DATA
   // ====================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx83PCEqT39I-X5GHyuAII2QkpEz_zLOYX_HCp2G6U8UvhGGMhpu6xzqMoO7yU-11R5dw/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHDb0sk3x66U6_J4sOIcomljQzA4_-7DsJSxGGM_EDlGYE9KUSQ6lbKug0-Fr3geoBeQ/exec";
   const SALT = "AECMEC_MALI_QURANIC_CENTERS_SALT_2026_SECURE";
   const DEFAULT_PASSWORD = "NANA@fatima2";
 
