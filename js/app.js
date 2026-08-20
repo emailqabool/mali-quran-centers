@@ -447,6 +447,60 @@
     localStorage.setItem('mali_quran_communes', JSON.stringify(communesList));
   }
 
+  async function fetchCloudData() {
+    try {
+      const targetUrl = localStorage.getItem('mali_quran_custom_script_url') || GOOGLE_SCRIPT_URL;
+      if (!targetUrl) return;
+
+      const res = await fetch(`${targetUrl}?action=getAllData&t=${Date.now()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      if (data && data.success) {
+        if (Array.isArray(data.communes) && data.communes.length > 0) {
+          communesList = data.communes;
+          saveCommunesToStorage();
+          renderCommuneOptions();
+        }
+        if (Array.isArray(data.centers) && data.centers.length > 0) {
+          centersList = data.centers.map((item, idx) => ({
+            ...item,
+            status: item.status || STATUS_APPROVED,
+            ref_code: item.ref_code || `REC-2026-${String(item.id || idx + 1).padStart(4, '0')}`,
+            name_ar: xssClean(item.name_ar || ''),
+            name_fr: xssClean(item.name_fr || ''),
+            director_ar: xssClean(item.director_ar || ''),
+            director_fr: xssClean(item.director_fr || '')
+          }));
+          saveCentersToStorage();
+          renderTable();
+          updateStats();
+          updateAdminKPIStats();
+        }
+      }
+    } catch (err) {
+      console.warn("Cloud sync notice:", err);
+    }
+  }
+
+  async function sendCloudPayload(payload) {
+    try {
+      const targetUrl = localStorage.getItem('mali_quran_custom_script_url') || GOOGLE_SCRIPT_URL;
+      if (!targetUrl) return;
+
+      await fetch(targetUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.warn("Cloud sync error:", err);
+    }
+  }
+
   // ====================================================
   // 4. AUTHENTICATION
   // ====================================================
@@ -895,6 +949,7 @@
     }
 
     saveCentersToStorage();
+    sendCloudPayload({ action: 'addCenter', center: targetCenter });
 
     resetForm();
     renderTable();
@@ -946,6 +1001,7 @@
     if (idx !== -1) {
       centersList[idx].status = STATUS_APPROVED;
       saveCentersToStorage();
+      sendCloudPayload({ action: 'updateCenterStatus', id: id, status: STATUS_APPROVED });
       renderTable();
       updateStats();
       updateAdminKPIStats();
@@ -957,6 +1013,7 @@
     if (idx !== -1) {
       centersList[idx].status = STATUS_REJECTED;
       saveCentersToStorage();
+      sendCloudPayload({ action: 'updateCenterStatus', id: id, status: STATUS_REJECTED });
       renderTable();
       updateStats();
       updateAdminKPIStats();
@@ -967,6 +1024,7 @@
     if (confirm(I18N[currentLang].confirmDelete)) {
       centersList = centersList.filter(c => String(c.id) !== String(id));
       saveCentersToStorage();
+      sendCloudPayload({ action: 'deleteCenter', id: id });
       renderTable();
       updateStats();
       updateAdminKPIStats();
@@ -1503,6 +1561,7 @@
     }
 
     saveCommunesToStorage();
+    sendCloudPayload({ action: 'saveCommunes', communes: communesList });
     resetCommuneForm();
     renderCommuneOptions();
     renderCommunesModalTable();
@@ -1516,6 +1575,7 @@
     if (confirm(currentLang === 'ar' ? `هل أنت متأكد من حذف بلدية (${name})؟` : `Êtes-vous sûr de supprimer la commune (${name}) ?`)) {
       communesList = communesList.filter(c => String(c.id) !== String(id));
       saveCommunesToStorage();
+      sendCloudPayload({ action: 'saveCommunes', communes: communesList });
       resetCommuneForm();
       renderCommuneOptions();
       renderCommunesModalTable();
@@ -1550,6 +1610,7 @@
   function initApp() {
     loadStoredData();
     applyLanguageUI();
+    fetchCloudData();
 
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
@@ -1647,6 +1708,7 @@
   window.editCommune = editCommune;
   window.resetCommuneForm = resetCommuneForm;
   window.deleteCommune = deleteCommune;
+  window.fetchCloudData = fetchCloudData;
   window.filterTable = () => renderTable();
 
   window.setQuickFilterType = (type, el) => {
