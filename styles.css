@@ -1786,6 +1786,28 @@ body.admin-mode .pill-admin-only {
 /* ----------------------------------------------------
    Admin Header & Sidebar Profile Components
    ---------------------------------------------------- */
+.btn-header-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-header-login:hover {
+  background: #047857;
+  color: #ffffff;
+  border-color: #047857;
+  transform: translateY(-1px);
+}
+
 .btn-header-logout {
   display: inline-flex;
   align-items: center;

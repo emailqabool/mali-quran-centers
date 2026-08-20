@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="styles.css?v=20260820_v4">
+  <link rel="stylesheet" href="styles.css?v=20260820_v5">
   <!-- SheetJS for Styled Excel Export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -48,12 +48,12 @@
           </div>
         </div>
 
-        <!-- Controls (Language Switcher & Admin Quick Logout) -->
+        <!-- Controls (Language Switcher & Admin Quick Auth) -->
         <div class="header-controls">
-          <div id="header-auth-box" class="admin-only-inline" style="display: none;">
-            <button type="button" class="btn-header-logout" onclick="handleAdminLogout()" title="تسجيل الخروج">
-              <i class="fa-solid fa-right-from-bracket"></i>
-              <span id="txt-header-logout">تسجيل الخروج</span>
+          <div id="header-auth-box">
+            <button type="button" class="btn-header-login" onclick="openLoginModal()" title="دخول المسؤول">
+              <i class="fa-solid fa-lock"></i>
+              <span id="txt-header-login">دخول المسؤول</span>
             </button>
           </div>
           <button class="lang-toggle-btn" id="btn-lang-toggle" onclick="toggleLanguage()" title="تغيير اللغة / Changer la langue">
@@ -140,12 +140,6 @@
 
       <!-- Main Body Content Area -->
       <main class="content-area">
-
-        <!-- Public Banner Info -->
-        <div class="public-notice-banner" id="public-notice">
-          <i class="fa-solid fa-circle-info"></i>
-          <span>مرحباً بكم! الاستبيان مفتوح للجميع لإدخال بيانات المركز القرآني مباشرة. صلاحيات الإدارة والطباعة وتدقيق البيانات مخصصة لمسؤول النظام.</span>
-        </div>
 
         <!-- SECTION 1: PUBLIC SURVEY & DATA COLLECTION FORM -->
         <section class="card-box form-card" id="survey-section">
@@ -821,6 +815,6 @@
   </div>
 
   <!-- JavaScript Bundle -->
-  <script src="js/app.js?v=20260820_v4"></script>
+  <script src="js/app.js?v=20260820_v5"></script>
 </body>
 </html>
