@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="styles.css?v=20260820_live1">
+  <link rel="stylesheet" href="styles.css?v=20260820_v3">
   <!-- SheetJS for Styled Excel Export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -48,8 +48,14 @@
           </div>
         </div>
 
-        <!-- Controls (Language Switcher) -->
+        <!-- Controls (Language Switcher & Admin Quick Logout) -->
         <div class="header-controls">
+          <div id="header-auth-box" class="admin-only-inline" style="display: none;">
+            <button type="button" class="btn-header-logout" onclick="handleAdminLogout()" title="تسجيل الخروج">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span id="txt-header-logout">تسجيل الخروج</span>
+            </button>
+          </div>
           <button class="lang-toggle-btn" id="btn-lang-toggle" onclick="toggleLanguage()" title="تغيير اللغة / Changer la langue">
             <span id="txt-target-lang">🇫🇷 Français</span>
           </button>
@@ -117,6 +123,18 @@
             <span class="stat-num" id="side-stat-students">0</span>
             <span class="stat-lbl" id="lbl-stat-students">إجمالي الطلاب</span>
           </div>
+        </div>
+
+        <!-- Admin Profile & Quick Logout in Sidebar -->
+        <div class="sidebar-admin-box admin-only-block" id="sidebar-admin-box" style="display: none;">
+          <div class="sidebar-admin-user">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>مسؤول النظام</span>
+          </div>
+          <button type="button" class="btn-sidebar-logout" onclick="handleAdminLogout()" title="تسجيل الخروج">
+            <i class="fa-solid fa-power-off"></i>
+            <span>خروج</span>
+          </button>
         </div>
       </aside>
 
@@ -347,53 +365,62 @@
 
           <!-- Controls Bar (Filter, Search, Export Excel, Print) -->
           <div class="table-controls-bar">
-            <div class="control-group search-box">
-              <div class="input-icon-wrapper">
-                <input type="text" id="search-input" placeholder="بحث...">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <!-- Row 1: Search & Filter Dropdowns -->
+            <div class="controls-filters-row">
+              <div class="control-group search-box">
+                <div class="input-icon-wrapper">
+                  <input type="text" id="search-input" placeholder="بحث...">
+                  <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+              </div>
+
+              <div class="control-group filter-select">
+                <label for="filter-commune" id="lbl-filter-commune">البلدية:</label>
+                <select id="filter-commune">
+                  <option value="ALL" id="opt-filt-commune-all">الكل</option>
+                </select>
+              </div>
+
+              <div class="control-group filter-select">
+                <label for="filter-membership" id="lbl-filter-membership">العضوية:</label>
+                <select id="filter-membership">
+                  <option value="ALL" id="opt-filt-mem-all">الكل</option>
+                  <option value="Oui" id="opt-filt-mem-yes">نعم</option>
+                  <option value="Non" id="opt-filt-mem-no">لا</option>
+                </select>
+              </div>
+
+              <div class="control-group filter-select" id="filter-status-group" style="display: none;">
+                <label for="filter-status" id="lbl-filter-status">حالة التدقيق:</label>
+                <select id="filter-status">
+                  <option value="ALL" id="opt-filt-status-all">الكل</option>
+                  <option value="approved" id="opt-filt-status-approved">المعتمدة 🟢</option>
+                  <option value="pending" id="opt-filt-status-pending">قيد المراجعة 🟡</option>
+                  <option value="rejected" id="opt-filt-status-rejected">المرفوضة 🔴</option>
+                </select>
               </div>
             </div>
 
-            <div class="control-group filter-select">
-              <label for="filter-commune" id="lbl-filter-commune">البلدية:</label>
-              <select id="filter-commune">
-                <option value="ALL" id="opt-filt-commune-all">الكل</option>
-              </select>
-            </div>
+            <!-- Row 2: Action Toolbars -->
+            <div class="controls-actions-row">
+              <div class="actions-group-reports">
+                <button class="btn btn-excel" onclick="exportFormattedExcel()" title="تصدير ملف إكسل منسق بتصميم رسمي">
+                  <i class="fa-solid fa-file-excel"></i> <span id="btn-export-excel-txt">تصدير Excel</span>
+                </button>
+                <button class="btn btn-print" onclick="triggerPrintReport()" title="طباعة تقرير إحصائي مفصل">
+                  <i class="fa-solid fa-print"></i> <span id="btn-print-txt">طباعة</span>
+                </button>
+              </div>
 
-            <div class="control-group filter-select">
-              <label for="filter-membership" id="lbl-filter-membership">العضوية:</label>
-              <select id="filter-membership">
-                <option value="ALL" id="opt-filt-mem-all">الكل</option>
-                <option value="Oui" id="opt-filt-mem-yes">نعم</option>
-                <option value="Non" id="opt-filt-mem-no">لا</option>
-              </select>
-            </div>
-
-            <div class="control-group filter-select" id="filter-status-group" style="display: none;">
-              <label for="filter-status" id="lbl-filter-status">حالة التدقيق:</label>
-              <select id="filter-status">
-                <option value="ALL" id="opt-filt-status-all">الكل</option>
-                <option value="approved" id="opt-filt-status-approved">المعتمدة 🟢</option>
-                <option value="pending" id="opt-filt-status-pending">قيد المراجعة 🟡</option>
-                <option value="rejected" id="opt-filt-status-rejected">المرفوضة 🔴</option>
-              </select>
-            </div>
-
-            <div class="control-group action-btns">
-              <button class="btn btn-excel" onclick="exportFormattedExcel()" title="تصدير ملف إكسل منسق بتصميم رسمي">
-                <i class="fa-solid fa-file-excel"></i> <span class="hide-mobile" id="btn-export-excel-txt">تصدير Excel</span>
-              </button>
-              <button class="btn btn-print" onclick="triggerPrintReport()">
-                <i class="fa-solid fa-print"></i> <span class="hide-mobile" id="btn-print-txt">طباعة</span>
-              </button>
-              <button class="btn btn-backup admin-only-inline" onclick="downloadBackupJSON()" title="تنزيل نسخة احتياطية من البيانات">
-                <i class="fa-solid fa-download"></i> <span class="hide-mobile">نسخ احتياطي</span>
-              </button>
-              <button class="btn btn-restore admin-only-inline" onclick="triggerRestoreJSON()" title="استعادة نسخة احتياطية">
-                <i class="fa-solid fa-upload"></i> <span class="hide-mobile">استعادة</span>
-              </button>
-              <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackupJSON(event)" style="display:none;">
+              <div class="actions-group-data admin-only-inline" style="display: none;">
+                <button class="btn btn-backup" onclick="downloadBackupJSON()" title="تنزيل نسخة احتياطية من البيانات">
+                  <i class="fa-solid fa-download"></i> <span>نسخ احتياطي</span>
+                </button>
+                <button class="btn btn-restore" onclick="triggerRestoreJSON()" title="استعادة نسخة احتياطية">
+                  <i class="fa-solid fa-upload"></i> <span>استعادة</span>
+                </button>
+                <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackupJSON(event)" style="display:none;">
+              </div>
             </div>
           </div>
 
@@ -794,6 +821,6 @@
   </div>
 
   <!-- JavaScript Bundle -->
-  <script src="js/app.js?v=20260820_live1"></script>
+  <script src="js/app.js?v=20260820_v3"></script>
 </body>
 </html>
