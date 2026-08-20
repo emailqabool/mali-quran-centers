@@ -1020,7 +1020,7 @@
     const formCardTitle = document.getElementById('form-card-title');
     if (formCardTitle) formCardTitle.textContent = I18N[currentLang].formTitleNew;
     
-    setCenterTypeSelection('mixte');
+    setCenterTypeSelection('garcons');
     updateFormProgress();
   }
 
@@ -1754,6 +1754,7 @@
     }
 
     setupPhoneFormattingAndProgress();
+    setCenterTypeSelection('garcons');
   }
 
   if (document.readyState === 'loading') {
