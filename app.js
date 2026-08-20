@@ -550,7 +550,7 @@
     if (filterStatusGroup) filterStatusGroup.style.display = isAdminLoggedIn ? 'flex' : 'none';
     if (thStatus) thStatus.style.display = isAdminLoggedIn ? 'table-cell' : 'none';
     if (sidebar) sidebar.style.display = isAdminLoggedIn ? 'block' : 'none';
-    if (mobileNav) mobileNav.style.display = isAdminLoggedIn ? 'flex' : 'none';
+    if (mobileNav) mobileNav.style.display = (isAdminLoggedIn && window.innerWidth <= 991) ? 'flex' : 'none';
     if (mobileMenuToggle) mobileMenuToggle.style.display = isAdminLoggedIn ? 'block' : 'none';
     pillAdminOnly.forEach(el => el.style.display = isAdminLoggedIn ? 'inline-flex' : 'none');
     adminOnlyInline.forEach(el => el.style.display = isAdminLoggedIn ? 'inline-flex' : 'none');
