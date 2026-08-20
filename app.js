@@ -181,9 +181,19 @@
       lblPhone: "رقم الهاتف *",
       phPhone: "مثال: 76 12 34 56",
 
-      lblBoysCount: "عدد البنين",
-      lblGirlsCount: "عدد البنات",
-      lblTotalStudents: "إجمالي الطلاب والتصنيف",
+      lblBoysCount: "عدد الطلاب (البنين)",
+      lblGirlsCount: "عدد الطالبات (البنات)",
+      lblTotalStudents: "إجمالي الطلاب المسجلين",
+
+      lblCenterTypeHeading: "نوع المركز والطلاب المستهدفين *",
+      lblTypeGarconsTitle: "مركز بنين فقط",
+      lblTypeGarconsSub: "مخصص للذكور فقط",
+      lblTypeFillesTitle: "مركز بنات فقط",
+      lblTypeFillesSub: "مخصص للإناث فقط",
+      lblTypeMixteTitle: "مركز مشترك",
+      lblTypeMixteSub: "بنين وبنات في نفس المركز",
+      hintGarconsTxt: "ملاحظة: إذا كان لديكم فرع أو مركز منفصل للبنات، يرجى تسجيله بشكل مستقل في استمارة جديدة.",
+      hintFillesTxt: "ملاحظة: إذا كان لديكم فرع أو مركز منفصل للبنين، يرجى تسجيله بشكل مستقل في استمارة جديدة.",
 
       lblUnionMem: "هل المركز منضم إلى الاتحاد؟ *",
       optMemDefault: "اختر الخيار",
@@ -295,7 +305,17 @@
 
       lblBoysCount: "Nombre de garçons",
       lblGirlsCount: "Nombre de filles",
-      lblTotalStudents: "Total des élèves et type",
+      lblTotalStudents: "Total des élèves enregistrés",
+
+      lblCenterTypeHeading: "Type de centre et public cible *",
+      lblTypeGarconsTitle: "Centre Garçons uniquement",
+      lblTypeGarconsSub: "Dédié uniquement aux garçons",
+      lblTypeFillesTitle: "Centre Filles uniquement",
+      lblTypeFillesSub: "Dédié uniquement aux filles",
+      lblTypeMixteTitle: "Centre Mixte",
+      lblTypeMixteSub: "Garçons et filles au même centre",
+      hintGarconsTxt: "Remarque: Si vous avez un centre distinct pour les filles, veuillez l'enregistrer séparément dans un nouveau formulaire.",
+      hintFillesTxt: "Remarque: Si vous avez un centre distinct pour les garçons, veuillez l'enregistrer séparément dans un nouveau formulaire.",
 
       lblUnionMem: "Le centre est-il membre de l'Union ? *",
       optMemDefault: "Choisir l'option",
@@ -999,8 +1019,62 @@
     if (editIdInput) editIdInput.value = '';
     const formCardTitle = document.getElementById('form-card-title');
     if (formCardTitle) formCardTitle.textContent = I18N[currentLang].formTitleNew;
-    handleStudentCountInput();
+    
+    setCenterTypeSelection('mixte');
     updateFormProgress();
+  }
+
+  function setCenterTypeSelection(type) {
+    const genderTypeHidden = document.getElementById('student_gender_type');
+    if (genderTypeHidden) genderTypeHidden.value = type;
+
+    // Update Radio Elements
+    const radioGarcons = document.getElementById('type_garcons');
+    const radioFilles = document.getElementById('type_filles');
+    const radioMixte = document.getElementById('type_mixte');
+    if (radioGarcons) radioGarcons.checked = (type === 'garcons');
+    if (radioFilles) radioFilles.checked = (type === 'filles');
+    if (radioMixte) radioMixte.checked = (type === 'mixte');
+
+    // Update Card Active Class
+    const cardGarcons = document.getElementById('card-type-garcons');
+    const cardFilles = document.getElementById('card-type-filles');
+    const cardMixte = document.getElementById('card-type-mixte');
+    if (cardGarcons) cardGarcons.classList.toggle('active', type === 'garcons');
+    if (cardFilles) cardFilles.classList.toggle('active', type === 'filles');
+    if (cardMixte) cardMixte.classList.toggle('active', type === 'mixte');
+
+    // Dynamic Fields Display
+    const groupBoys = document.getElementById('group-boys-count');
+    const groupGirls = document.getElementById('group-girls-count');
+    const boysInput = document.getElementById('boys_count');
+    const girlsInput = document.getElementById('girls_count');
+    const hintBox = document.getElementById('type-hint-box');
+    const hintText = document.getElementById('type-hint-text');
+
+    if (type === 'garcons') {
+      if (groupBoys) groupBoys.style.display = 'block';
+      if (groupGirls) groupGirls.style.display = 'none';
+      if (girlsInput) girlsInput.value = '0';
+      if (hintBox) {
+        hintBox.style.display = 'flex';
+        if (hintText) hintText.textContent = I18N[currentLang].hintGarconsTxt;
+      }
+    } else if (type === 'filles') {
+      if (groupBoys) groupBoys.style.display = 'none';
+      if (groupGirls) groupGirls.style.display = 'block';
+      if (boysInput) boysInput.value = '0';
+      if (hintBox) {
+        hintBox.style.display = 'flex';
+        if (hintText) hintText.textContent = I18N[currentLang].hintFillesTxt;
+      }
+    } else {
+      if (groupBoys) groupBoys.style.display = 'block';
+      if (groupGirls) groupGirls.style.display = 'block';
+      if (hintBox) hintBox.style.display = 'none';
+    }
+
+    handleStudentCountInput();
   }
 
   function editCenterForm(id) {
@@ -1025,7 +1099,8 @@
     document.getElementById('girls_count').value = center.girls;
     document.getElementById('union_membership').value = center.membership;
 
-    handleStudentCountInput();
+    const detectedType = center.gender_type || (center.boys > 0 && center.girls === 0 ? 'garcons' : (center.girls > 0 && center.boys === 0 ? 'filles' : 'mixte'));
+    setCenterTypeSelection(detectedType);
     updateFormProgress();
   }
 
@@ -1077,27 +1152,28 @@
     const badgeLbl = document.getElementById('auto-type-lbl');
     const genderTypeHidden = document.getElementById('student_gender_type');
 
-    const boys = parseInt(boysInput ? boysInput.value : 0) || 0;
-    const girls = parseInt(girlsInput ? girlsInput.value : 0) || 0;
-    const total = boys + girls;
+    const currentType = genderTypeHidden ? genderTypeHidden.value : 'mixte';
 
+    let boys = parseInt(boysInput ? boysInput.value : 0) || 0;
+    let girls = parseInt(girlsInput ? girlsInput.value : 0) || 0;
+
+    if (currentType === 'garcons') girls = 0;
+    if (currentType === 'filles') boys = 0;
+
+    const total = boys + girls;
     if (totalInput) totalInput.value = total;
 
-    let type = 'mixte';
-    let typeLabel = currentLang === 'ar' ? 'بنين وبنات' : 'Mixte';
+    let typeLabel = currentLang === 'ar' ? 'مشترك' : 'Mixte';
     let badgeClass = 'badge-mixte';
 
-    if (boys > 0 && girls === 0) {
-      type = 'garcons';
-      typeLabel = currentLang === 'ar' ? 'بنين فقط' : 'Garçons uniquement';
+    if (currentType === 'garcons') {
+      typeLabel = currentLang === 'ar' ? 'بنين فقط' : 'Garçons';
       badgeClass = 'badge-garcons';
-    } else if (girls > 0 && boys === 0) {
-      type = 'filles';
-      typeLabel = currentLang === 'ar' ? 'بنات فقط' : 'Filles uniquement';
+    } else if (currentType === 'filles') {
+      typeLabel = currentLang === 'ar' ? 'بنات فقط' : 'Filles';
       badgeClass = 'badge-filles';
     }
 
-    if (genderTypeHidden) genderTypeHidden.value = type;
     if (badgeLbl) badgeLbl.textContent = typeLabel;
     if (badgeEl) {
       badgeEl.className = `auto-type-badge ${badgeClass}`;
@@ -1741,6 +1817,7 @@
   window.editCommune = editCommune;
   window.resetCommuneForm = resetCommuneForm;
   window.deleteCommune = deleteCommune;
+  window.setCenterTypeSelection = setCenterTypeSelection;
   window.fetchCloudData = fetchCloudData;
   window.filterTable = () => renderTable();
 
